@@ -1,19 +1,21 @@
+/* Created by alexdemars94 on 8/26/16. */
+
 // React Stuff
 import React from 'react'
-import {Modal, Button} from 'react-bootstrap'
-
-// NPM Package Stuff
-import base64 from 'base-64'
+// import {Modal, Button} from 'react-bootstrap'
 
 // Custom Components
 import NoteList from './NoteList'
+import NoteIcon from './NoteIcon'
 
 // This is the main React component that will hold all state and methods for react-note
 class NotesLibrary extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      showModal: false
+      caseComponent : null,
+      loaded        : false,
+      showModal     : true
     }
   }
 
@@ -28,42 +30,46 @@ class NotesLibrary extends React.Component {
   }
 
   getCaseNotes = () => {
-    let url = 'http://localhost:8080/sustain/ws/rest/ecourt/search/CaseNote/case.id/'
+    let url = 'https://jtidev-qa.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/case.id/'
       + this.props.caseId + '?includeClobs=true'
 
     fetch(url,
       {
         method : 'GET',
         headers: {
-          'Authorization': 'Basic ' + base64.encode('joe' + ':' + 'pass'),
-          'contentType'  : 'application/json'
+          'Authorization': 'Basic ' + btoa('admin' + ':' + '@pass$'),
+          'content-type'  : 'application/json'
         }
       }
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log("Data:", data);
+        console.log("Data:", data)
+        this.setState({ caseComponent: data[0], loaded: true })
       })
   }
 
   onToggleShowModal = () => this.setState({showModal: !this.state.showModal})
 
   renderNoteList = () => {
-    console.log("Rendering NoteList for " + "%c" + this.props.caseComponent.title + "%c with showModal value "
-      + "%c" + this.state.showModal, "color:#214280", "color:#000", "color:#269973")
-  }
-
-  render() {
     let noteListProps = {
       showModal        : this.state.showModal,
       onToggleShowModal: this.onToggleShowModal,
       newNoteOnOpen    : this.props.newNoteOnOpen,
-      caseComponent    : this.props.caseComponent,
+      caseComponent    : this.state.caseComponent,
       typeFilters      : []
     }
-    let foo = <NoteList { ...noteListProps } />
     return (
-      <div>hello world</div>
+      <NoteList { ...noteListProps } />
+    )
+  }
+
+  render() {
+    return(
+      <div>
+        <NoteIcon onClick={ this.onToggleShowModal }/>
+        { this.state.loaded ?  this.renderNoteList() : false }
+      </div>
     )
   }
 }
