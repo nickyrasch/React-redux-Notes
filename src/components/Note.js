@@ -15,7 +15,7 @@ class Note extends React.Component {
   render() {
     return (
       <Panel bsStyle="default">
-        { this.props.noteContent }
+        <div dangerouslySetInnerHTML={{ __html: this.props.noteContent }}></div>
         <Button style={{ float: 'right' }} onClick={ this.log }>
           ↰
         </Button>

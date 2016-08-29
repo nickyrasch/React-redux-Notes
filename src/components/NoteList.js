@@ -2,16 +2,13 @@
 
 // React Stuff
 import React from 'react'
-import {Modal, Button, Grid, Row, Col, InputGroup, FormControl} from 'react-bootstrap'
+import { Modal } from 'react-bootstrap'
 
 // Custom Components
 import NoteSearch from './NoteSearch'
+import NoteEditor from './NoteEditor'
 
 class NoteList extends React.Component {
-  constructor(props) {
-    super(props)
-  }
-
   static propTypes = {
     caseComponents   : React.PropTypes.array.isRequired,
     onToggleShowModal: React.PropTypes.func.isRequired,
@@ -19,11 +16,11 @@ class NoteList extends React.Component {
   }
 
   static defaultProps = {
-    newNoteOnOpen : false,
-    editNoteOnOpen: false,
-    searchable    : true,
-    typeFilters   : ['CASE_NOTE', 'ANNOTATION'],
-    sharingFilters: []
+    newNoteOnOpen  : false,
+    editNoteOnOpen : false,
+    searchable     : true,
+    typeFilters    : ['CASE_NOTE', 'ANNOTATION'],
+    sharingFilters : []
   }
 
   render() {
@@ -44,7 +41,10 @@ class NoteList extends React.Component {
         </Modal.Header>
 
         <Modal.Body>
+
           <NoteSearch />
+
+          <NoteEditor />
 
           { this.props.notes /* Render the notes array */ }
 

@@ -2,10 +2,9 @@
 
 // React Stuff
 import React from 'react'
-import {Button, Grid, Row, Col, InputGroup, FormControl} from 'react-bootstrap'
+import { Button, Grid, Row, Col, InputGroup, FormControl } from 'react-bootstrap'
 
 class NoteSearch extends React.Component {
-
   static defaultProps = {
     newNoteOnOpen : false,
     editNoteOnOpen: false,
@@ -18,7 +17,7 @@ class NoteSearch extends React.Component {
     return (
       <form action="#" className={ 'form-inline' }
           onSubmit={this.onSearch}
-          style={ this.props.searchable ? { marginBottom: '15px' } : { display: 'none' }}>
+          style={ this.props.searchable ? {} : { display: 'none' }}>
         <Grid fluid>
           <Row>
             <Col sm={ 8 }>
@@ -27,22 +26,23 @@ class NoteSearch extends React.Component {
                   type={ 'text' }
                   placeholder={ 'Search...' }
                   onChange={ this.onChangeSearchTerm }
+                  style={{ marginBottom: '8px' }}
                 />
 
                 <InputGroup.Button style={{ width: '32px' }}>
-                  <Button style={{ width: '100%' }} onClick={ this.onToggleFilters }>
+                  <Button style={{ marginBottom: '8px', width: '100%' }} onClick={ this.onToggleFilters }>
                     Filters
                   </Button>
                 </InputGroup.Button>
               </InputGroup>
             </Col>
             <Col sm={ 2 }>
-              <Button onClick={ this.onSearch } bsStyle={ 'primary' } style={{ width: '100%' }}>
+              <Button onClick={ this.onSearch } bsStyle={ 'primary' } style={{ marginBottom: '8px', width: '100%' }}>
                 Search
               </Button>
             </Col>
             <Col sm={ 2 }>
-              <Button onClick={ this.onAddNote } bsStyle={ 'success' } style={{ width: '100%' }}>
+              <Button onClick={ this.onAddNote } bsStyle={ 'success' } style={{ marginBottom: '8px', width: '100%' }}>
                 Add Note
               </Button>
             </Col>

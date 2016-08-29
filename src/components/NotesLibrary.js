@@ -17,6 +17,7 @@ class NotesLibrary extends React.Component {
       caseComponents : [],
       loaded         : false,
       showModal      : true,
+      showNoteEditor : false,
       notes          : []
     }
   }
@@ -32,6 +33,15 @@ class NotesLibrary extends React.Component {
   }
 
   onToggleShowModal = () => this.setState({showModal: !this.state.showModal}) // Super slick one-liner
+
+  onAddNote = () => {
+    this.setState({
+      note               : null,
+      caseComponentClass : this.state.caseComponent.entityName,
+      caseComponentId    : this.state.caseComponent.id,
+      showNoteEditor     : true
+    })
+  }
 
   getCaseNotes = () => {
     let url = `https://jtidev-qa.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/case.id/${ this.props.caseId }?depth=1&includeClobs=true`
@@ -63,10 +73,7 @@ class NotesLibrary extends React.Component {
       console.log("Component in loop:", component)
       console.log("Content for component:", component.content)
 
-      // Regex to remove HTML tags from content
-      let formattedContent = component.content.replace(/<\/?[^>]+(>|$)/g, "");
-
-      let note = <Note key={ formattedContent } noteContent={ formattedContent } />
+      let note = <Note key={ component.content } noteContent={ component.content } />
       newArr.push(note)
       if (newArr.length === this.state.caseComponents.length) {
         // Run set state as callback to ensure this.state.notes is set before being passed to NoteList
