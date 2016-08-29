@@ -30,14 +30,12 @@ class NotesLibrary extends React.Component {
   }
 
   getCaseNotes = () => {
-    let url = 'https://jtidev-qa.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/case.id/'
-      + this.props.caseId + '?includeClobs=true'
-
+    let url = `https://jtidev-qa.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/case.id/${ this.props.caseId }?depth=1&includeClobs=true`
     fetch(url,
       {
         method : 'GET',
         headers: {
-          'Authorization': 'Basic ' + btoa('admin' + ':' + '@pass$'),
+          'Authorization' : `Basic ${btoa('admin:@pass$')}`,
           'content-type'  : 'application/json'
         }
       }
@@ -45,7 +43,12 @@ class NotesLibrary extends React.Component {
       .then((res) => res.json())
       .then((data) => {
         console.log("Data:", data)
-        this.setState({ caseComponent: data[0], loaded: true })
+        if (data) {
+          this.setState({caseComponent: data, loaded: true})
+        }
+      })
+      .catch((err) => {
+        console.error(err)
       })
   }
 
@@ -55,7 +58,6 @@ class NotesLibrary extends React.Component {
     let noteListProps = {
       showModal        : this.state.showModal,
       onToggleShowModal: this.onToggleShowModal,
-      newNoteOnOpen    : this.props.newNoteOnOpen,
       caseComponent    : this.state.caseComponent,
       typeFilters      : []
     }
