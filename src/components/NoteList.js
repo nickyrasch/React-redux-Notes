@@ -2,21 +2,18 @@
 
 // React Stuff
 import React from 'react'
-import {Modal, Button, Panel, Grid, Row, Col, InputGroup, FormControl} from 'react-bootstrap'
+import {Modal, Button, Grid, Row, Col, InputGroup, FormControl} from 'react-bootstrap'
 
 // Custom Components
-import Note from "./Note"
+import NoteSearch from './NoteSearch'
 
 class NoteList extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      notes: []
-    }
   }
 
   static propTypes = {
-    caseComponent    : React.PropTypes.array.isRequired,
+    caseComponents   : React.PropTypes.array.isRequired,
     onToggleShowModal: React.PropTypes.func.isRequired,
     showModal        : React.PropTypes.bool.isRequired
   }
@@ -29,30 +26,9 @@ class NoteList extends React.Component {
     sharingFilters: []
   }
 
-  componentDidMount() {
-    this.renderCaseNotes()
-  }
-
-  renderCaseNotes = () => {
-    console.log(this.props.caseComponent)
-    let arr = this.props.caseComponent
-    let newArr = []
-    arr.forEach((component) => {
-      console.log("Component in loop:", component)
-      console.log("Content for component:", component.content)
-
-      // Regex to remove HTML tags from content
-      let cleanText = component.content.replace(/<\/?[^>]+(>|$)/g, "");
-
-      let note = <Note key={ cleanText } noteContent={ cleanText } />
-      newArr.push(note)
-      this.setState({ notes: newArr })
-    })
-  }
-
   render() {
     console.log("Rendering NoteList.js")
-    let caseName = this.props.caseComponent[0] ? this.props.caseComponent[0].case.caseName : null;
+    let caseName = this.props.caseComponents[0].case.caseName
 
     let modalProps = {
       show  : this.props.showModal,
@@ -68,42 +44,9 @@ class NoteList extends React.Component {
         </Modal.Header>
 
         <Modal.Body>
-          <form action="#" className={ 'form-inline' }
-                onSubmit={this.onSearch}
-                style={ this.props.searchable ? { marginBottom: '15px' } : { display: 'none' }}>
-            <Grid fluid>
-              <Row>
-                <Col sm={ 8 }>
-                  <InputGroup style={{ width: '100%' }}>
-                    <FormControl
-                      type={ 'text' }
-                      value={ this.state.term || '' }
-                      placeholder={ this.state.placeholder }
-                      onChange={ this.onChangeSearchTerm }
-                    />
+          <NoteSearch />
 
-                    <InputGroup.Button style={{ width: '32px' }}>
-                      <Button style={{ width: '100%' }} onClick={ this.onToggleFilters }>
-                        Filters
-                      </Button>
-                    </InputGroup.Button>
-                  </InputGroup>
-                </Col>
-                <Col sm={ 2 }>
-                  <Button onClick={ this.onSearch } bsStyle={ 'primary' } style={{ width: '100%' }}>
-                    Search
-                  </Button>
-                </Col>
-                <Col sm={ 2 }>
-                  <Button onClick={ this.onAddNote } bsStyle={ 'success' } style={{ width: '100%' }}>
-                    Add Note
-                  </Button>
-                </Col>
-              </Row>
-            </Grid>
-          </form>
-
-          { this.state.notes }
+          { this.props.notes /* Render the notes array */ }
 
         </Modal.Body>
 
