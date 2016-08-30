@@ -5,8 +5,9 @@ import React from 'react'
 import { Panel, Button } from 'react-bootstrap'
 
 // Draft JS Stuff
-import { Editor, EditorState, RichUtils, Modifier } from 'draft-js'
+import { Editor, EditorState, RichUtils, Modifier, convertFromHTML, convertToRaw, convertFromRaw, ContentState } from 'draft-js'
 import { stateToHTML } from 'draft-js-export-html'
+import { stateFromHTML } from 'draft-js-import-html'
 
 const styles = {
   root: {
@@ -20,7 +21,7 @@ const styles = {
     cursor: 'text',
     fontSize: 16,
     marginTop: 20,
-    minHeight: 200,
+    minHeight: 128,
     paddingTop: 20,
   },
   controls: {
@@ -63,6 +64,12 @@ const colorStyleMap = {
   }
 }
 
+let html
+
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// **************** Color Controls *****************
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 const ColorControls = (props) => {
   var currentStyle = props.editorState.getCurrentInlineStyle()
   return (
@@ -79,6 +86,10 @@ const ColorControls = (props) => {
     </div>
   );
 };
+
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// ***************** Style Buttons *****************
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 class StyleButton extends React.Component {
   constructor(props) {
@@ -105,17 +116,49 @@ class StyleButton extends React.Component {
   }
 }
 
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// *************** React Simple RTE ****************
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 class ReactSimpleRTE extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      editorState: EditorState.createEmpty()
+      editorState : EditorState.createEmpty(),
+      title       : ''
+    }
+  }
+
+  static propTypes = {
+    noteContent        : React.PropTypes.string.isRequired,
+    mode               : React.PropTypes.string.isRequired,
+    onToggleShowEditor : React.PropTypes.func.isRequired
+  }
+
+  componentWillMount() {
+    if ( this.props.mode === 'edit' ) {
+      this.onImportHTML()
+      this.setState({ title: "Edit Note" })
     }
   }
 
   focus = () => this.refs.editor.focus()
 
   onChange = (editorState) => this.setState({ editorState })
+
+  onImportHTML = (editorState) => {
+    // let nextEditorState = EditorState.createWithContent(stateFromHTML())
+    let htmlStr = this.props.noteContent
+    // let htmlStr = '<span style=\"color: #5cb85c\">This is some content.</span>'
+    // let convertedHTML = convertFromHTML(htmlStr)
+    console.log(htmlStr)
+    let convertedHTML = stateFromHTML(htmlStr)
+    console.log("Converted HTML:", convertedHTML)
+
+    // let contentState = ContentState.createFromBlockArray(convertedHTML)
+    let nextEditorState = EditorState.createWithContent(convertedHTML)
+    this.onChange(nextEditorState)
+  }
 
   onExportHTML = (editorState) => {
     // Get the style from the wrapper block and add it inline before exporting HTML
@@ -133,16 +176,11 @@ class ReactSimpleRTE extends React.Component {
     };
 
     let contentState = editorState.getCurrentContent()
-    let html = stateToHTML(contentState, options)
+    html = stateToHTML(contentState, options)
     console.log("HTML:", html)
   }
 
   toggleColor = (toggledColor) => this._toggleColor(toggledColor)
-
-  // toggleColor = () => {
-  //   console.log(this.state.editorState.getCurrentInlineStyle())
-  //   this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, '269973'))
-  // }
 
   _onBoldClick() {
     this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'BOLD'))
@@ -156,7 +194,7 @@ class ReactSimpleRTE extends React.Component {
     const {editorState} = this.state;
     const selection = editorState.getSelection()
 
-    // Let's just allow one color at a time. Turn off all active colors.
+    // Allow one color at a time. Turn off all active colors.
     const nextContentState = Object.keys(colorStyleMap)
       .reduce((contentState, color) => {
         return Modifier.removeInlineStyle(contentState, selection, color)
@@ -194,13 +232,20 @@ class ReactSimpleRTE extends React.Component {
     const { editorState } = this.state
 
     return (
-      <Panel bsStyle='primary' header="Draft.js Editor"
+      <Panel bsStyle='primary'
+             header={ this.state.title }
              style={{ alignSelf: 'stretch', alignItems: 'stretch', width: '100%' }}>
         <div style={ styles.root }>
           <ColorControls
             editorState={ editorState }
             onToggle={ this.toggleColor }
           />
+          
+          <Button onClick={ () => this._onBoldClick() } style={{ marginTop: '4px', marginRight: '4px' }}>Bold</Button>
+          <Button onClick={ () => this._onItalicsClick() } style={{ marginTop: '4px', marginRight: '4px' }}>Italics</Button>
+          <Button onClick={ () => this.onImportHTML(editorState) } style={{ marginTop: '4px', marginRight: '4px' }}>Import</Button>
+          <Button onClick={ () => this.onExportHTML(editorState) } style={{ marginTop: '4px', marginRight: '4px' }}>Export</Button>
+
           <div style={ styles.editor } onClick={ this.focus }>
             <Editor
               customStyleMap={ colorStyleMap }
@@ -210,10 +255,7 @@ class ReactSimpleRTE extends React.Component {
               ref={ 'editor' }
             />
           </div>
-          <Button onClick={ () => this._onBoldClick() }>Bold</Button>
-          <Button onClick={ () => this._onItalicsClick() }>Italics</Button>
-          <Button onClick={ () => this.toggleColor() }>Green</Button>
-          <Button onClick={ () => this.onExportHTML(editorState) }>Export</Button>
+          <Button onClick={ () => this.props.onToggleShowEditor('') } style={{ marginTop: '4px', marginRight: '4px' }}>Close</Button>
         </div>
       </Panel>
     )

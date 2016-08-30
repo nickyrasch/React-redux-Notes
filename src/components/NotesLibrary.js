@@ -7,7 +7,6 @@ import React from 'react'
 // Custom Components
 import NoteList from './NoteList'
 import NoteIcon from './NoteIcon'
-import Note     from './Note'
 
 // This is the main React component that will hold all state and methods for react-note
 class NotesLibrary extends React.Component {
@@ -17,15 +16,12 @@ class NotesLibrary extends React.Component {
       caseComponents : [],
       loaded         : false,
       showModal      : true,
-      showNoteEditor : false,
+      showEditor     : false,
       notes          : []
     }
   }
 
-  static propTypes = {
-    caseId: React.PropTypes.number.isRequired
-  }
-
+  static propTypes = { caseId: React.PropTypes.number.isRequired }
   static defaultProps = {}
 
   componentWillMount() {
@@ -33,6 +29,7 @@ class NotesLibrary extends React.Component {
   }
 
   onToggleShowModal = () => this.setState({showModal: !this.state.showModal}) // Super slick one-liner
+  onToggleShowEditor = () => this.setState({ showEditor: !this.state.showEditor }) // So slick
 
   onAddNote = () => {
     this.setState({
@@ -59,7 +56,8 @@ class NotesLibrary extends React.Component {
         console.log("Data:", data)
         if (data) {
           // Set state as callback to ensure renderNoteList isn't called without this.state.notes being set
-          this.formatCaseComponents(data, this.setState({ caseComponents: data, loaded: true }))
+          this.setState({ caseComponents: data })
+          this.updateNotesArray()
         }
       })
       .catch((err) => {
@@ -67,35 +65,37 @@ class NotesLibrary extends React.Component {
       })
   }
 
-  formatCaseComponents = (data, callback) => {
-    let newArr = []
-    data.forEach((component) => {
-      console.log("Component in loop:", component)
-      console.log("Content for component:", component.content)
-
-      let note = <Note key={ component.content } noteContent={ component.content } />
-      newArr.push(note)
-      if (newArr.length === this.state.caseComponents.length) {
-        // Run set state as callback to ensure this.state.notes is set before being passed to NoteList
-        this.setState({notes: newArr}, callback)
+  updateNotesArray = () => {
+    let notes = []
+    this.state.caseComponents.forEach((component) => {
+      notes.push(component.content)
+      // Set state once the notes array contains content from all case components
+      if (notes.length === this.state.caseComponents.length) {
+        this.setState({ notes: notes, loaded: true })
       }
     })
   }
 
   renderNoteList = () => {
     let noteListProps = {
-      showModal         : this.state.showModal,
-      onToggleShowModal : this.onToggleShowModal,
-      caseComponents    : this.state.caseComponents,
-      notes             : this.state.notes,
-      typeFilters       : []
+      showModal          : this.state.showModal,
+      showEditor         : this.state.showEditor,
+      onToggleShowModal  : this.onToggleShowModal,
+      onToggleShowEditor : this.onToggleShowEditor,
+      caseComponents     : this.state.caseComponents,
+      notes              : this.state.notes,
+      typeFilters        : []
     }
+
+    console.log("Note list props:", noteListProps)
+
     return (
       <NoteList { ...noteListProps } />
     )
   }
 
   render() {
+    console.log("Notes array:", this.state.notes)
     return(
       <div>
         <NoteIcon onClick={ this.onToggleShowModal }/>

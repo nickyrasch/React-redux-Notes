@@ -6,13 +6,15 @@ import { Modal } from 'react-bootstrap'
 
 // Custom Components
 import NoteSearch from './NoteSearch'
-import NoteEditor from './NoteEditor'
+import Note from './Note'
 
 class NoteList extends React.Component {
   static propTypes = {
-    caseComponents   : React.PropTypes.array.isRequired,
-    onToggleShowModal: React.PropTypes.func.isRequired,
-    showModal        : React.PropTypes.bool.isRequired
+    caseComponents     : React.PropTypes.array.isRequired,
+    showModal          : React.PropTypes.bool.isRequired,
+    showEditor         : React.PropTypes.bool.isRequired,
+    onToggleShowModal  : React.PropTypes.func.isRequired,
+    onToggleShowEditor : React.PropTypes.func.isRequired
   }
 
   static defaultProps = {
@@ -21,6 +23,19 @@ class NoteList extends React.Component {
     searchable     : true,
     typeFilters    : ['CASE_NOTE', 'ANNOTATION'],
     sharingFilters : []
+  }
+
+  createNotes = () => {
+    let index = 0
+    let arr = this.props.notes.map(() => {
+      let noteProps = {
+        noteContent: this.props.notes[index],
+        key        : index
+      }
+      index++
+      return <Note { ...noteProps }/>
+    })
+    return arr
   }
 
   render() {
@@ -41,12 +56,11 @@ class NoteList extends React.Component {
         </Modal.Header>
 
         <Modal.Body>
-
           <NoteSearch />
 
-          <NoteEditor />
+          {/*<NoteEditor showEditor={ this.props.showEditor } onToggleShowEditor={ this.props.onToggleShowEditor }/>*/}
 
-          { this.props.notes /* Render the notes array */ }
+          { this.createNotes() /* Render the notes array */ }
 
         </Modal.Body>
 

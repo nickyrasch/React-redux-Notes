@@ -13,9 +13,17 @@ class NoteEditor extends React.Component {
     this.state = {}
   }
 
+  static propTypes = {
+    showEditor         : React.PropTypes.bool.isRequired,
+    onToggleShowEditor : React.PropTypes.func.isRequired,
+    noteContent        : React.PropTypes.string.isRequired
+  }
+
   render() {
     return (
-      <ReactSimpleRTE />
+      <div>
+        { this.props.showEditor ? <ReactSimpleRTE noteContent={ this.props.noteContent }/> : null }
+      </div>
     )
   }
 }
