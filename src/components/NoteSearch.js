@@ -26,23 +26,23 @@ class NoteSearch extends React.Component {
                   type={ 'text' }
                   placeholder={ 'Search...' }
                   onChange={ this.onChangeSearchTerm }
-                  style={{ marginBottom: '8px' }}
+                  style={{ marginBottom: '16px' }}
                 />
 
                 <InputGroup.Button style={{ width: '32px' }}>
-                  <Button style={{ marginBottom: '8px', width: '100%' }} onClick={ this.onToggleFilters }>
+                  <Button style={{ marginBottom: '16px', width: '100%' }} onClick={ this.onToggleFilters }>
                     Filters
                   </Button>
                 </InputGroup.Button>
               </InputGroup>
             </Col>
             <Col sm={ 2 }>
-              <Button onClick={ this.onSearch } bsStyle={ 'primary' } style={{ marginBottom: '8px', width: '100%' }}>
+              <Button onClick={ this.onSearch } bsStyle={ 'primary' } style={{ marginBottom: '16px', width: '100%' }}>
                 Search
               </Button>
             </Col>
             <Col sm={ 2 }>
-              <Button onClick={ this.onAddNote } bsStyle={ 'success' } style={{ marginBottom: '8px', width: '100%' }}>
+              <Button onClick={ this.onAddNote } bsStyle={ 'success' } style={{ marginBottom: '16px', width: '100%' }}>
                 Add Note
               </Button>
             </Col>
