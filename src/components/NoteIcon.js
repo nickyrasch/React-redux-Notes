@@ -8,7 +8,7 @@ class NoteIcon extends React.Component {
   render() {
     return (
       <a href="#" onClick={ this.props.onClick }>
-        Open Modal
+        <span style={{ alignSelf: 'stretch', fontSize: '200px' }}>Open Modal</span>
       </a>
     )
   }

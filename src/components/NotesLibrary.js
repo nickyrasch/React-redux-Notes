@@ -98,7 +98,7 @@ class NotesLibrary extends React.Component {
     console.log("Notes array:", this.state.notes)
     return(
       <div>
-        <NoteIcon onClick={ this.onToggleShowModal }/>
+        <NoteIcon onClick={ this.onToggleShowModal } />
         { this.state.loaded ?  this.renderNoteList() : false }
       </div>
     )

@@ -2,7 +2,7 @@
 
 // React Stuff
 import React from 'react'
-import { Panel, Button } from 'react-bootstrap'
+import { Panel, Button, DropdownButton, MenuItem, ButtonGroup } from 'react-bootstrap'
 
 // Draft JS Stuff
 import { Editor, EditorState, RichUtils, Modifier, convertFromHTML, convertToRaw, convertFromRaw, ContentState } from 'draft-js'
@@ -25,8 +25,6 @@ const styles = {
     paddingTop: 20,
   },
   controls: {
-    fontFamily: '\'Helvetica\', sans-serif',
-    fontSize: 14,
     marginBottom: 10,
     userSelect: 'none',
   },
@@ -67,22 +65,31 @@ const colorStyleMap = {
 let html
 
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-// **************** Color Controls *****************
+// ******************* Controls ********************
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-const ColorControls = (props) => {
+const Controls = (props) => {
   var currentStyle = props.editorState.getCurrentInlineStyle()
   return (
     <div style={ styles.controls }>
-      {colors.map(type =>
-        <StyleButton
-          active={ currentStyle.has(type.style) }
-          label={ type.label }
-          onToggle={ props.onToggle }
-          key={ type.label }
-          style={ type.style }
-        />
-      )}
+      <ButtonGroup>
+        <Button onClick={ props.onBoldClick }>Bold</Button>
+        <Button onClick={ props.onItalicsClick }>Italics</Button>
+        <Button onClick={ () => props.onImportHTML(editorState) }>Import</Button>
+        <Button onClick={ () => props.onExportHTML(editorState) }>Export</Button>
+
+        <DropdownButton title={ 'Color' }>
+          {colors.map((color) =>
+            <StyleButton
+              active={ currentStyle.has(color.style) }
+              label={ color.label }
+              onToggle={ props.onToggle }
+              key={ color.label }
+              style={ color.style }
+            />
+          )}
+        </DropdownButton>
+      </ButtonGroup>
     </div>
   );
 };
@@ -95,7 +102,7 @@ class StyleButton extends React.Component {
   constructor(props) {
     super(props);
     this.onToggle = (e) => {
-      e.preventDefault();
+      // e.preventDefault();
       this.props.onToggle(this.props.style);
     };
   }
@@ -104,14 +111,19 @@ class StyleButton extends React.Component {
     let style
     if (this.props.active) {
       style = { ...styles.styleButton, ...colorStyleMap[this.props.style] }
+      console.log("If Style:", style)
+      console.log("If Style (props):", this.props.style)
     } else {
       style = styles.styleButton
+      console.log("Else Style:", style)
+      console.log("Else Style (props):", this.props.style)
     }
-
     return (
-      <span style={style} onMouseDown={this.onToggle}>
-        { this.props.label }
-      </span>
+      <MenuItem>
+        <span style={style} onMouseDown={this.onToggle}>
+          { this.props.label }
+        </span>
+      </MenuItem>
     );
   }
 }
@@ -236,16 +248,14 @@ class ReactSimpleRTE extends React.Component {
              header={ this.state.title }
              style={{ alignSelf: 'stretch', alignItems: 'stretch', width: '100%' }}>
         <div style={ styles.root }>
-          <ColorControls
+          <Controls
             editorState={ editorState }
             onToggle={ this.toggleColor }
+            onBoldClick={ this._onBoldClick }
+            onItalicsClick={ this._onItalicsClick }
+            onImportHTML={ this.onImportHTML }
+            onExportHTML={ this.onExportHTML }
           />
-          
-          <Button onClick={ () => this._onBoldClick() } style={{ marginTop: '4px', marginRight: '4px' }}>Bold</Button>
-          <Button onClick={ () => this._onItalicsClick() } style={{ marginTop: '4px', marginRight: '4px' }}>Italics</Button>
-          <Button onClick={ () => this.onImportHTML(editorState) } style={{ marginTop: '4px', marginRight: '4px' }}>Import</Button>
-          <Button onClick={ () => this.onExportHTML(editorState) } style={{ marginTop: '4px', marginRight: '4px' }}>Export</Button>
-
           <div style={ styles.editor } onClick={ this.focus }>
             <Editor
               customStyleMap={ colorStyleMap }
