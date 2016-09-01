@@ -8,6 +8,7 @@ import { Panel, Button, DropdownButton, MenuItem, ButtonGroup } from 'react-boot
 import { Editor, EditorState, RichUtils, Modifier, convertFromHTML, convertToRaw, convertFromRaw, ContentState } from 'draft-js'
 import { stateToHTML } from 'draft-js-export-html'
 import { stateFromHTML } from 'draft-js-import-html'
+import {stateFromElement } from 'draft-js-import-element'
 
 const styles = {
   root: {
@@ -23,10 +24,6 @@ const styles = {
     marginTop: 20,
     minHeight: 128,
     paddingTop: 20,
-  },
-  controls: {
-    marginBottom: 10,
-    userSelect: 'none',
   },
   styleButton: {
     color: '#999',
@@ -68,31 +65,48 @@ let html
 // ******************* Controls ********************
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-const Controls = (props) => {
-  var currentStyle = props.editorState.getCurrentInlineStyle()
-  return (
-    <div style={ styles.controls }>
-      <ButtonGroup>
-        <Button onClick={ props.onBoldClick }>Bold</Button>
-        <Button onClick={ props.onItalicsClick }>Italics</Button>
-        <Button onClick={ () => props.onImportHTML(editorState) }>Import</Button>
-        <Button onClick={ () => props.onExportHTML(editorState) }>Export</Button>
+class Controls extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      open: false
+    }
+  }
 
-        <DropdownButton title={ 'Color' }>
-          {colors.map((color) =>
-            <StyleButton
-              active={ currentStyle.has(color.style) }
-              label={ color.label }
-              onToggle={ props.onToggle }
-              key={ color.label }
-              style={ color.style }
-            />
-          )}
+  static propTypes = {
+    editorState: React.PropTypes.object.isRequired
+  }
+
+  renderMenuItems = () => {
+    let currentStyle = this.props.editorState.getCurrentInlineStyle()
+    return colors.map((color, i) => {
+      return (
+        <StyleButton
+          index={ i.toString() }
+          active={ currentStyle.has(color.style) }
+          label={ color.label }
+          toggleColor={ this.props.toggleColor }
+          key={ i.toString() }
+          style={ color.style }
+        />
+      )
+    })
+  }
+
+  render() {
+    return (
+      <ButtonGroup>
+        <Button onClick={ this.props.onBoldClick }>Bold</Button>
+        <Button onClick={ () => this.props.onItalicsClick(this.props.editorState) }>Italics</Button>
+        <Button onClick={ () => this.props.onImportHTML(this.props.editorState) }>Import</Button>
+        <Button onClick={ () => this.props.onExportHTML(this.props.editorState) }>Export</Button>
+        <DropdownButton title={ 'Color' } id={ 'dropdown-basic' } dropup>
+          { this.renderMenuItems() }
         </DropdownButton>
       </ButtonGroup>
-    </div>
-  );
-};
+    )
+  }
+}
 
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 // ***************** Style Buttons *****************
@@ -101,9 +115,8 @@ const Controls = (props) => {
 class StyleButton extends React.Component {
   constructor(props) {
     super(props);
-    this.onToggle = (e) => {
-      // e.preventDefault();
-      this.props.onToggle(this.props.style);
+    this.onToggle = () => {
+      this.props.toggleColor(this.props.style);
     };
   }
 
@@ -111,16 +124,13 @@ class StyleButton extends React.Component {
     let style
     if (this.props.active) {
       style = { ...styles.styleButton, ...colorStyleMap[this.props.style] }
-      console.log("If Style:", style)
-      console.log("If Style (props):", this.props.style)
+      console.log("Style:", style)
     } else {
       style = styles.styleButton
-      console.log("Else Style:", style)
-      console.log("Else Style (props):", this.props.style)
     }
     return (
-      <MenuItem>
-        <span style={style} onMouseDown={this.onToggle}>
+      <MenuItem eventKey={ this.props.index } onSelect={ this.onToggle }>
+        <span style={style}>
           { this.props.label }
         </span>
       </MenuItem>
@@ -158,13 +168,31 @@ class ReactSimpleRTE extends React.Component {
 
   onChange = (editorState) => this.setState({ editorState })
 
+  parseHTML = (html) => {
+    var doc = void 0;
+    if (typeof DOMParser !== 'undefined') {
+      var parser = new DOMParser();
+      doc = parser.parseFromString(html, 'text/html');
+    } else {
+      doc = document.implementation.createHTMLDocument('');
+      doc.documentElement.innerHTML = html;
+    }
+    return doc.body;
+  }
+
   onImportHTML = (editorState) => {
     // let nextEditorState = EditorState.createWithContent(stateFromHTML())
-    let htmlStr = this.props.noteContent
+    // let htmlStr = this.props.noteContent
+
+    let parsedHTML = this.parseHTML('<span style=\"color: #5cb85c\">This is some content.</span>')
+    console.log("Parsed HTML:", parsedHTML)
+
+    // let htmlStr = JSON.parse('<span style=\"color: #5cb85c\">This is some content.</span>')
+
     // let htmlStr = '<span style=\"color: #5cb85c\">This is some content.</span>'
     // let convertedHTML = convertFromHTML(htmlStr)
-    console.log(htmlStr)
-    let convertedHTML = stateFromHTML(htmlStr)
+    // console.log(htmlStr)
+    let convertedHTML = stateFromElement(parsedHTML)
     console.log("Converted HTML:", convertedHTML)
 
     // let contentState = ContentState.createFromBlockArray(convertedHTML)
@@ -193,12 +221,15 @@ class ReactSimpleRTE extends React.Component {
   }
 
   toggleColor = (toggledColor) => this._toggleColor(toggledColor)
+  // onBoldClick = () => this._onBoldClick()
+  // onItalicsClick = () => this._onItalicsClick()
 
-  _onBoldClick() {
+  _onBoldClick = () => {
     this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'BOLD'))
   }
 
   _onItalicsClick() {
+    console.log("THIS", this)
     this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'ITALIC'))
   }
 
@@ -236,7 +267,6 @@ class ReactSimpleRTE extends React.Component {
         toggledColor
       );
     }
-
     this.onChange(nextEditorState);
   }
 
@@ -250,7 +280,7 @@ class ReactSimpleRTE extends React.Component {
         <div style={ styles.root }>
           <Controls
             editorState={ editorState }
-            onToggle={ this.toggleColor }
+            toggleColor={ this.toggleColor }
             onBoldClick={ this._onBoldClick }
             onItalicsClick={ this._onItalicsClick }
             onImportHTML={ this.onImportHTML }

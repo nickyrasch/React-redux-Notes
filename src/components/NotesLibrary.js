@@ -41,7 +41,7 @@ class NotesLibrary extends React.Component {
   }
 
   getCaseNotes = () => {
-    let url = `https://jtidev-qa.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/case.id/${ this.props.caseId }?depth=1&includeClobs=true`
+    let url = `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/case.id/${ this.props.caseId }?depth=1&includeClobs=true`
     fetch(url,
       {
         method : 'GET',
