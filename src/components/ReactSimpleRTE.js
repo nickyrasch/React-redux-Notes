@@ -43,7 +43,7 @@ const colors = [
 
 const colorStyleMap = {
   SPAN: {
-    color: '#d9534f'
+    color: 'rgb(217,83,79)'
   },
   red: {
     color: '#d9534f'
@@ -169,7 +169,11 @@ class ReactSimpleRTE extends React.Component {
 
   focus = () => this.refs.editor.focus()
 
-  onChange = (editorState) => this.setState({ editorState })
+  onChange = (editorState) => {
+    console.log("Editor State:", editorState)
+    console.log("Editor State Context:", editorState.getCurrentContent()._map._root.entries[0][1]._list._tail.array[0][1]._map._root.entries)
+    this.setState({ editorState })
+  }
 
   parseHTML = (html) => {
     var doc = void 0;
@@ -184,38 +188,61 @@ class ReactSimpleRTE extends React.Component {
   }
 
   onImportHTML = (editorState) => {
-    // let nextEditorState = EditorState.createWithContent(stateFromHTML())
 
     // let htmlStr = this.props.noteContent
-    // let htmlStr = '<span style=\"color: #5cb85c\">This is some content.</span>'
+    let htmlStr = '<p>No color should be here. <span style=\"color: RGB(38, 153, 115)\">This should have color. </span><span style=\"color: RGB(33, 66, 128)\">This should also have color. </span><span style=\"color: RGB(115, 155, 229)\">This one too.</span></p>'
     // let htmlStr = "<p>- Why should the court excuse an outburst on the date in question?</p>\n<p>- Timeliness records.</p>"
-    let htmlStr = "<p><span style=\"color: rgb(51, 51, 51); font-family: 'Lucida Grande', 'Lucida Sans Unicode', Arial, Verdana, sans-serif; font-size: 11.0500001907349px; line-height: 16.5750007629395px;\">Vestibulum at scelerisque tortor, euismod hendrerit dui. Phasellus ullamcorper nec nulla a placerat. Sed elementum pulvinar tempus.&nbsp;#important&nbsp;is the tag</span></p>"
+    // let htmlStr = "<p><span style=\"color: rgb(51, 51, 51); font-family: 'Lucida Grande', 'Lucida Sans Unicode', Arial, Verdana, sans-serif; font-size: 11.0500001907349px; line-height: 16.5750007629395px;\">Vestibulum at scelerisque tortor, euismod hendrerit dui. Phasellus ullamcorper nec nulla a placerat. Sed elementum pulvinar tempus.&nbsp;#important&nbsp;is the tag</span></p>"
     let parsedHTML = this.parseHTML(htmlStr)
 
     let parsedHTMLChildCount = parsedHTML.childNodes.length
+    let colors = []
+    let states = []
 
     for (let i = 0; i < parsedHTMLChildCount; i++) {
       let childNode = parsedHTML.childNodes[i]
       console.log("childNode in loop:", childNode)
       let childNodeChildCount = childNode.childNodes.length
-      console.log("childNode children count:", childNodeChildCount)
+      if (childNodeChildCount > 1) {
+        for (let j = 0; j < childNodeChildCount; j++) {
+          let childNodeChild = childNode.childNodes[j]
+          let childNodeChildContentState = stateFromHTML(childNodeChild)
+
+          RichUtils.toggleInlineStyle(
+            childNodeChildContentState,
+            colorStyleMap.orange
+          )
+
+          states.push(childNodeChildContentState)
+          let childNodeChildStyle = childNodeChild.style.color
+          console.log("childNode child style", childNodeChildStyle)
+          colors.push(childNodeChildStyle)
+          colorStyleMap.SPAN.color = childNodeChildStyle
+        }
+      } else if ( childNodeChildCount < 2 ) {
+        console.log('childNode style:', childNode.style.color)
+        colors.push(childNode.style.color)
+        colorStyleMap.SPAN.color = childNode.style.color
+        break
+      }
+      console.log("Color Array:", colors)
+      console.log("States Array:", states)
     }
 
-    console.log("Parsed HTML:", parsedHTML.getElementsByTagName('span')[0].style)
-
-    // let convertedHTML = convertFromHTML(htmlStr)
-    // console.log(htmlStr)
-    // let style = parsedHTML.getElementsByTagName('span')[0].getPropertyValue('style')
     let convertedHTML = stateFromElement(parsedHTML, {
       elementStyles: {
         'span' : 'SPAN',
         'style': 'STYLE'
       }
     })
-    console.log("Converted HTML:", convertedHTML)
+    console.log("Converted HTML:", convertedHTML._map._root.entries[0][1]._list._tail.array[0][1]._map._root.entries)
 
     // let contentState = ContentState.createFromBlockArray(convertedHTML)
+
+
+
     let nextEditorState = EditorState.createWithContent(convertedHTML)
+    // console.log("Editor State:", nextEditorState)
     this.onChange(nextEditorState)
   }
 
@@ -287,15 +314,13 @@ class ReactSimpleRTE extends React.Component {
   }
 
   render() {
-    const { editorState } = this.state
-
     return (
       <Panel bsStyle='primary'
              header={ this.state.title }
              style={{ alignSelf: 'stretch', alignItems: 'stretch', width: '100%' }}>
         <div style={ styles.root }>
           <Controls
-            editorState={ editorState }
+            editorState={ this.state.editorState }
             toggleColor={ this.toggleColor }
             onBoldClick={ this._onBoldClick }
             onItalicsClick={ this._onItalicsClick }
@@ -305,7 +330,7 @@ class ReactSimpleRTE extends React.Component {
           <div style={ styles.editor } onClick={ this.focus }>
             <Editor
               customStyleMap={ colorStyleMap }
-              editorState={ editorState }
+              editorState={ this.state.editorState }
               onChange={ this.onChange }
               placeholder={ 'Write something...' }
               ref={ 'editor' }

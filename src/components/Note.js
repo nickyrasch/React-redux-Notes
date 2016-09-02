@@ -20,26 +20,20 @@ class Note extends React.Component {
 
   onToggleShowEditor = (mode) => {
     console.log('Mode:', mode)
-    this.setState({ showEditor: !this.state.showEditor, mode: !this.state.mode ? mode : '' })
+    this.setState({ showEditor: !this.state.showEditor})
   }
 
   renderEditor = () => {
-    let editorProps = {
-      mode               : this.state.mode,
-      noteContent        : this.props.noteContent,
-      onToggleShowEditor : this.onToggleShowEditor
-    }
     return (
       <div style={{ marginTop: '10px' }}>
-        <ReactSimpleRTE { ...editorProps }/>
+        Hooray!
       </div>)
   }
 
   renderNoteButtons = () => {
     return (
       <ButtonGroup style={{ position: 'absolute', right: '0' }}>
-        <Button onClick={ () => this.onToggleShowEditor('edit') }>Edit</Button>
-        <Button onClick={ () => this.onToggleShowEditor('reply') }>Reply</Button>
+        <Button onClick={ this.onToggleShowEditor }>Edit</Button>
       </ButtonGroup>
     )
   }
