@@ -42,17 +42,20 @@ const colors = [
 ]
 
 const colorStyleMap = {
+  SPAN: {
+    color: '#d9534f'
+  },
   red: {
-    color: '#d9534f',
+    color: '#d9534f'
   },
   orange: {
-    color: '#f0ad4e',
+    color: '#f0ad4e'
   },
   green: {
-    color: '#5cb85c',
+    color: '#5cb85c'
   },
   blue: {
-    color: '#428bca',
+    color: '#428bca'
   },
   grey: {
     color: '#e7e7e7'
@@ -182,17 +185,33 @@ class ReactSimpleRTE extends React.Component {
 
   onImportHTML = (editorState) => {
     // let nextEditorState = EditorState.createWithContent(stateFromHTML())
+
     // let htmlStr = this.props.noteContent
-
-    let parsedHTML = this.parseHTML('<span style=\"color: #5cb85c\">This is some content.</span>')
-    console.log("Parsed HTML:", parsedHTML)
-
-    // let htmlStr = JSON.parse('<span style=\"color: #5cb85c\">This is some content.</span>')
-
     // let htmlStr = '<span style=\"color: #5cb85c\">This is some content.</span>'
+    // let htmlStr = "<p>- Why should the court excuse an outburst on the date in question?</p>\n<p>- Timeliness records.</p>"
+    let htmlStr = "<p><span style=\"color: rgb(51, 51, 51); font-family: 'Lucida Grande', 'Lucida Sans Unicode', Arial, Verdana, sans-serif; font-size: 11.0500001907349px; line-height: 16.5750007629395px;\">Vestibulum at scelerisque tortor, euismod hendrerit dui. Phasellus ullamcorper nec nulla a placerat. Sed elementum pulvinar tempus.&nbsp;#important&nbsp;is the tag</span></p>"
+    let parsedHTML = this.parseHTML(htmlStr)
+
+    let parsedHTMLChildCount = parsedHTML.childNodes.length
+
+    for (let i = 0; i < parsedHTMLChildCount; i++) {
+      let childNode = parsedHTML.childNodes[i]
+      console.log("childNode in loop:", childNode)
+      let childNodeChildCount = childNode.childNodes.length
+      console.log("childNode children count:", childNodeChildCount)
+    }
+
+    console.log("Parsed HTML:", parsedHTML.getElementsByTagName('span')[0].style)
+
     // let convertedHTML = convertFromHTML(htmlStr)
     // console.log(htmlStr)
-    let convertedHTML = stateFromElement(parsedHTML)
+    // let style = parsedHTML.getElementsByTagName('span')[0].getPropertyValue('style')
+    let convertedHTML = stateFromElement(parsedHTML, {
+      elementStyles: {
+        'span' : 'SPAN',
+        'style': 'STYLE'
+      }
+    })
     console.log("Converted HTML:", convertedHTML)
 
     // let contentState = ContentState.createFromBlockArray(convertedHTML)
@@ -205,8 +224,7 @@ class ReactSimpleRTE extends React.Component {
     let options = {
       inlineStyles: {
         // Override default <strong> tags.
-        BOLD: { element: 'b' },
-        // Use a custom inline color style.
+        BOLD   : { element: 'b' },
         red    : { style: colorStyleMap.red },
         orange : { style: colorStyleMap.orange },
         green  : { style: colorStyleMap.green },
@@ -221,14 +239,12 @@ class ReactSimpleRTE extends React.Component {
   }
 
   toggleColor = (toggledColor) => this._toggleColor(toggledColor)
-  // onBoldClick = () => this._onBoldClick()
-  // onItalicsClick = () => this._onItalicsClick()
 
   _onBoldClick = () => {
     this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'BOLD'))
   }
 
-  _onItalicsClick() {
+  _onItalicsClick = () => {
     console.log("THIS", this)
     this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'ITALIC'))
   }

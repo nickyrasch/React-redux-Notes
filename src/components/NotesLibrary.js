@@ -1,31 +1,35 @@
 /* Created by alexdemars94 on 8/26/16. */
 
 // React Stuff
-import React from 'react'
-// import {Modal, Button} from 'react-bootstrap'
+import React, { Component } from 'react'
+import { refetch } from '../utils/api-connector'
 
 // Custom Components
 import NoteList from './NoteList'
 import NoteIcon from './NoteIcon'
 
 // This is the main React component that will hold all state and methods for react-note
-class NotesLibrary extends React.Component {
+class NotesLibrary extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      caseComponents : [],
-      loaded         : false,
       showModal      : true,
       showEditor     : false,
-      notes          : []
+      caseComponents : []
     }
   }
 
-  static propTypes = { caseId: React.PropTypes.number.isRequired }
-  static defaultProps = {}
+  static propTypes = {
+    caseId: React.PropTypes.number.isRequired
+  }
 
-  componentWillMount() {
-    this.getCaseNotes()
+  static defaultProps = {
+    caseComponents : [],
+    notes          : []
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({ caseComponents: nextProps.caseComponents.value }, () => this.updateNotesArray())
   }
 
   onToggleShowModal = () => this.setState({showModal: !this.state.showModal}) // Super slick one-liner
@@ -38,31 +42,6 @@ class NotesLibrary extends React.Component {
       caseComponentId    : this.state.caseComponent.id,
       showNoteEditor     : true
     })
-  }
-
-  getCaseNotes = () => {
-    let url = `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/case.id/${ this.props.caseId }?depth=1&includeClobs=true`
-    fetch(url,
-      {
-        method : 'GET',
-        headers: {
-          'Authorization' : `Basic ${btoa('admin:@pass$')}`,
-          'content-type'  : 'application/json'
-        }
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Data:", data)
-        if (data) {
-          // Set state as callback to ensure renderNoteList isn't called without this.state.notes being set
-          this.setState({ caseComponents: data })
-          this.updateNotesArray()
-        }
-      })
-      .catch((err) => {
-        console.error(err)
-      })
   }
 
   updateNotesArray = () => {
@@ -83,11 +62,8 @@ class NotesLibrary extends React.Component {
       onToggleShowModal  : this.onToggleShowModal,
       onToggleShowEditor : this.onToggleShowEditor,
       caseComponents     : this.state.caseComponents,
-      notes              : this.state.notes,
-      typeFilters        : []
+      notes              : this.state.notes
     }
-
-    console.log("Note list props:", noteListProps)
 
     return (
       <NoteList { ...noteListProps } />
@@ -95,14 +71,17 @@ class NotesLibrary extends React.Component {
   }
 
   render() {
-    console.log("Notes array:", this.state.notes)
     return(
       <div>
         <NoteIcon onClick={ this.onToggleShowModal } />
-        { this.state.loaded ?  this.renderNoteList() : false }
+        { this.state.loaded ? this.renderNoteList() : false }
       </div>
     )
   }
 }
 
-module.exports = NotesLibrary
+export default refetch(props => ({
+  caseComponents: {
+    url: `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/case.id/${ props.caseId }?depth=1&includeClobs=true`
+  }
+}))(NotesLibrary)
