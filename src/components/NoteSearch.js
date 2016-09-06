@@ -30,7 +30,7 @@ class NoteSearch extends React.Component {
                 />
 
                 <InputGroup.Button style={{ width: '32px' }}>
-                  <Button style={{ marginBottom: '16px', width: '100%' }} onClick={ this.onToggleFilters }>
+                  <Button style={{ marginBottom: '16px', width: '100%' }} onClick={ this.props.onToggleShowFilters }>
                     Filters
                   </Button>
                 </InputGroup.Button>
@@ -42,7 +42,7 @@ class NoteSearch extends React.Component {
               </Button>
             </Col>
             <Col sm={ 2 }>
-              <Button onClick={ this.onAddNote } bsStyle={ 'success' } style={{ marginBottom: '16px', width: '100%' }}>
+              <Button onClick={ this.props.onToggleShowEditor } bsStyle={ 'success' } style={{ marginBottom: '16px', width: '100%' }}>
                 Add Note
               </Button>
             </Col>

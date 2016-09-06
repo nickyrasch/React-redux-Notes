@@ -15,6 +15,7 @@ class NotesLibrary extends Component {
     this.state = {
       showModal      : true,
       showEditor     : false,
+      showFilters    : false,
       caseComponents : []
     }
   }
@@ -34,6 +35,7 @@ class NotesLibrary extends Component {
 
   onToggleShowModal = () => this.setState({showModal: !this.state.showModal}) // Super slick one-liner
   onToggleShowEditor = () => this.setState({ showEditor: !this.state.showEditor }) // So slick
+  onToggleShowFilters = () => this.setState({ showFilters: !this.state.showFilters }) // Oh yeah
 
   onAddNote = () => {
     this.setState({
@@ -57,12 +59,14 @@ class NotesLibrary extends Component {
 
   renderNoteList = () => {
     let noteListProps = {
-      showModal          : this.state.showModal,
-      showEditor         : this.state.showEditor,
-      onToggleShowModal  : this.onToggleShowModal,
-      onToggleShowEditor : this.onToggleShowEditor,
-      caseComponents     : this.state.caseComponents,
-      notes              : this.state.notes
+      showModal           : this.state.showModal,
+      showEditor          : this.state.showEditor,
+      showFilters         : this.state.showFilters,
+      onToggleShowModal   : this.onToggleShowModal,
+      onToggleShowEditor  : this.onToggleShowEditor,
+      onToggleShowFilters : this.onToggleShowFilters,
+      caseComponents      : this.state.caseComponents,
+      notes               : this.state.notes
     }
 
     return (

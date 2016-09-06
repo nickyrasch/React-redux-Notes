@@ -7,12 +7,15 @@ import { Modal } from 'react-bootstrap'
 // Custom Components
 import NoteSearch from './NoteSearch'
 import Note from './Note'
+import NoteEditor from './NoteEditor'
+import NoteFilter from './NoteFilter'
 
-class NoteList extends React.Component {
+export default class NoteList extends React.Component {
   static propTypes = {
     caseComponents     : React.PropTypes.array.isRequired,
     showModal          : React.PropTypes.bool.isRequired,
     showEditor         : React.PropTypes.bool.isRequired,
+    showFilters        : React.PropTypes.bool.isRequired,
     onToggleShowModal  : React.PropTypes.func.isRequired,
     onToggleShowEditor : React.PropTypes.func.isRequired
   }
@@ -27,7 +30,7 @@ class NoteList extends React.Component {
 
   createNotes = () => {
     let index = 0
-    let arr = this.props.notes.map(() => {
+    return this.props.notes.map(() => {
       let noteProps = {
         noteContent: this.props.notes[index],
         key        : index
@@ -35,7 +38,18 @@ class NoteList extends React.Component {
       index++
       return <Note { ...noteProps }/>
     })
-    return arr
+  }
+
+  renderFilters = () => {
+    return (
+      <NoteFilter />
+    )
+  }
+
+  renderNoteEditor = () => {
+    return (
+      <NoteEditor showEditor={ this.props.showEditor } onChangeContent={ this.onChangeContent } onToggleShowEditor={ this.props.onToggleShowEditor }/>
+    )
   }
 
   render() {
@@ -56,12 +70,10 @@ class NoteList extends React.Component {
         </Modal.Header>
 
         <Modal.Body>
-          <NoteSearch />
-
-          {/*<NoteEditor showEditor={ this.props.showEditor } onToggleShowEditor={ this.props.onToggleShowEditor }/>*/}
-
+          <NoteSearch onToggleShowEditor={ this.props.onToggleShowEditor } onToggleShowFilters={ this.props.onToggleShowFilters }/> {/* Render the search bar and search buttons */}
+          { this.props.showFilters ? this.renderFilters() : null }
+          { this.props.showEditor ? this.renderNoteEditor() : null }
           { this.createNotes() /* Render the notes array */ }
-
         </Modal.Body>
 
         <Modal.Footer>
@@ -70,5 +82,3 @@ class NoteList extends React.Component {
     )
   }
 }
-
-module.exports = NoteList

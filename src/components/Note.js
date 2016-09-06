@@ -3,7 +3,7 @@
 import React from 'react';
 import { Panel, Button, Grid, Row, Col, ButtonGroup } from 'react-bootstrap'
 
-import ReactSimpleRTE from './ReactSimpleRTE'
+import NoteEditor from './NoteEditor'
 
 class Note extends React.Component {
   constructor(props) {
@@ -20,13 +20,29 @@ class Note extends React.Component {
 
   onToggleShowEditor = (mode) => {
     console.log('Mode:', mode)
-    this.setState({ showEditor: !this.state.showEditor})
+    this.setState({ showEditor: !this.state.showEditor, mode: !this.state.mode ? mode : '' })
+  }
+
+  onChangeContent = (e) => {
+    console.log("Event:", e)
+  }
+
+  onChange = (event) => {
+    console.log(arguments)
+    console.log(event)
+    console.log("Active editor changed:", tinymce.activeEditor.getContent())
   }
 
   renderEditor = () => {
+    let editorProps = {
+      mode               : this.state.mode,
+      noteContent        : this.props.noteContent,
+      onToggleShowEditor : this.onToggleShowEditor
+    }
     return (
       <div style={{ marginTop: '10px' }}>
-        Hooray!
+        {/*<ReactSimpleRTE { ...editorProps }/>*/}
+        <NoteEditor onToggleShowEditor={ this.onToggleShowEditor } defaultValue={ this.props.noteContent } onChange={ this.onChange } onChangeContent={ this.onChangeContent } header={ 'Edit Note' }/>
       </div>)
   }
 
