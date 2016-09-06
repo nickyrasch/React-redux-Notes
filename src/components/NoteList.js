@@ -30,10 +30,10 @@ export default class NoteList extends React.Component {
 
   createNotes = () => {
     let index = 0
-    return this.props.notes.map(() => {
+    return this.props.caseComponents.map(() => {
       let noteProps = {
-        noteContent: this.props.notes[index],
-        key        : index
+        caseComponent : this.props.caseComponents[index],
+        key           : index
       }
       index++
       return <Note { ...noteProps }/>
@@ -73,7 +73,7 @@ export default class NoteList extends React.Component {
           <NoteSearch onToggleShowEditor={ this.props.onToggleShowEditor } onToggleShowFilters={ this.props.onToggleShowFilters }/> {/* Render the search bar and search buttons */}
           { this.props.showFilters ? this.renderFilters() : null }
           { this.props.showEditor ? this.renderNoteEditor() : null }
-          { this.createNotes() /* Render the notes array */ }
+          { this.createNotes() }
         </Modal.Body>
 
         <Modal.Footer>

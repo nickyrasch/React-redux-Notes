@@ -15,7 +15,7 @@ class Note extends React.Component {
   }
 
   static propTypes = {
-    noteContent: React.PropTypes.string.isRequired
+    caseComponent: React.PropTypes.object.isRequired
   }
 
   onToggleShowEditor = (mode) => {
@@ -28,21 +28,35 @@ class Note extends React.Component {
   }
 
   onChange = (event) => {
-    console.log(arguments)
     console.log(event)
     console.log("Active editor changed:", tinymce.activeEditor.getContent())
+  }
+
+  getNoteColor = () => {
+    let possibleStyles = [
+      { code: '#E7E7E7', style: 'default' },
+      { code: '#DB524B', style: 'danger'},
+      { code: '#F2AE43', style: 'warn' },
+      { code: '#58B957', style: 'success' },
+      { code: '#3E8ACC', style: 'primary' }
+    ]
+    let panelStyle = null
+    possibleStyles.forEach((color) => {
+      if (color.code === this.props.caseComponent.color.toUpperCase()) {
+        panelStyle = color.style
+      }
+    })
+    return panelStyle
   }
 
   renderEditor = () => {
     let editorProps = {
       mode               : this.state.mode,
-      noteContent        : this.props.noteContent,
       onToggleShowEditor : this.onToggleShowEditor
     }
     return (
       <div style={{ marginTop: '10px' }}>
-        {/*<ReactSimpleRTE { ...editorProps }/>*/}
-        <NoteEditor onToggleShowEditor={ this.onToggleShowEditor } defaultValue={ this.props.noteContent } onChange={ this.onChange } onChangeContent={ this.onChangeContent } header={ 'Edit Note' }/>
+        <NoteEditor onToggleShowEditor={ this.onToggleShowEditor } defaultValue={ this.props.caseComponent.content } onChange={ this.onChange } onChangeContent={ this.onChangeContent } header={ 'Edit Note' }/>
       </div>)
   }
 
@@ -57,11 +71,11 @@ class Note extends React.Component {
   render() {
     return (
       <div>
-        <Panel bsStyle="default">
+        <Panel bsStyle={ this.getNoteColor() }>
           <Grid fluid>
             <Row style={{ height: '34px' }}>
               <Col sm={ 9 } xs={ 7 }>
-                <div dangerouslySetInnerHTML={{ __html: this.props.noteContent }}></div>
+                <div dangerouslySetInnerHTML={{ __html: this.props.caseComponent.content }}></div>
               </Col>
               <Col sm={ 3 } xs={ 5 }>
                 { this.renderNoteButtons() }

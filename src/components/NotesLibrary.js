@@ -15,7 +15,7 @@ class NotesLibrary extends Component {
     this.state = {
       showModal      : true,
       showEditor     : false,
-      showFilters    : false,
+      showFilters    : true,
       caseComponents : []
     }
   }
