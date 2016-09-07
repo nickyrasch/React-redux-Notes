@@ -8,7 +8,6 @@ import { Modal } from 'react-bootstrap'
 import NoteSearch from './NoteSearch'
 import Note from './Note'
 import NoteEditor from './NoteEditor'
-import NoteFilter from './NoteFilter'
 
 export default class NoteList extends React.Component {
   static propTypes = {
@@ -28,57 +27,66 @@ export default class NoteList extends React.Component {
     sharingFilters : []
   }
 
+  componentDidMount() {
+    console.log("%cNote List has been mounted.", "color:#58B957;")
+  }
+
+  componentWillUnmount() {
+    console.log("%cNote List has been unmounted.", "color:#DB524B;")
+  }
+
   createNotes = () => {
-    let index = 0
-    return this.props.caseComponents.map(() => {
+    return this.props.caseComponents.map((component, i) => {
       let noteProps = {
-        caseComponent : this.props.caseComponents[index],
-        key           : index
+        caseComponent: component,
+        key          : i
       }
-      index++
       return <Note { ...noteProps }/>
     })
   }
 
-  renderFilters = () => {
-    return (
-      <NoteFilter />
-    )
+  onChange = (event) => {
+    console.log(event.target.getContent())
   }
 
   renderNoteEditor = () => {
     return (
-      <NoteEditor showEditor={ this.props.showEditor } onChangeContent={ this.onChangeContent } onToggleShowEditor={ this.props.onToggleShowEditor }/>
+      <NoteEditor panelColor={{ style: 'default' }} showEditor={ this.props.showEditor } onToggleShowEditor={ this.props.onToggleShowEditor } onChange={ this.onChange }/>
     )
   }
 
   render() {
-    console.log("Rendering NoteList.js")
-    let caseName = this.props.caseComponents[0].case.caseName
+    if (this.props.caseComponents.length > 0) {
+      let caseName = this.props.caseComponents[0].case.caseName
+      let modalProps = {
+        show  : this.props.showModal,
+        onHide: this.props.onToggleShowModal,
+        bsSize: 'large'
+      }
+      return (
+        <Modal show={ this.props.showModal } { ...modalProps }>
+          <Modal.Header closeButton>
+            <span style={{ fontSize: "18px", fontWeight: "bold" }}>Notes for: </span>
+            <span style={{ fontSize: "18px" }}>{ caseName }</span>
+          </Modal.Header>
 
-    let modalProps = {
-      show  : this.props.showModal,
-      onHide: this.props.onToggleShowModal,
-      bsSize: 'large'
+          <Modal.Body>
+            <NoteSearch
+              onToggleShowEditor={ this.props.onToggleShowEditor }
+              onToggleShowFilters={ this.props.onToggleShowFilters }
+            />
+
+            { this.props.showFilters ? this.props.renderNoteFilter() : null }
+            { this.props.showEditor ? this.renderNoteEditor() : null }
+            { this.createNotes() }
+          </Modal.Body>
+
+          <Modal.Footer>
+          </Modal.Footer>
+        </Modal>
+      )
+    } else {
+      return <div/>
     }
-
-    return (
-      <Modal show={ this.props.showModal } { ...modalProps }>
-        <Modal.Header closeButton>
-          <span style={{ fontSize: "18px", fontWeight: "bold" }}>Notes for: </span><span
-          style={{ fontSize: "18px" }}>{ caseName }</span>
-        </Modal.Header>
-
-        <Modal.Body>
-          <NoteSearch onToggleShowEditor={ this.props.onToggleShowEditor } onToggleShowFilters={ this.props.onToggleShowFilters }/> {/* Render the search bar and search buttons */}
-          { this.props.showFilters ? this.renderFilters() : null }
-          { this.props.showEditor ? this.renderNoteEditor() : null }
-          { this.createNotes() }
-        </Modal.Body>
-
-        <Modal.Footer>
-        </Modal.Footer>
-      </Modal>
-    )
   }
 }

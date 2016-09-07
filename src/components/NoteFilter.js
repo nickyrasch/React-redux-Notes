@@ -1,14 +1,22 @@
 /* Created by alexdemars94 on 9/6/16. */
 
 import React, { Component } from 'react'
-import { Panel, Button, Checkbox, Grid, Row, Col } from 'react-bootstrap'
+import { Panel, Checkbox, Grid, Row, Col } from 'react-bootstrap'
 
 import { NoteColorPicker } from './NoteColorPicker'
 
 export default class NoteFilter extends Component {
 
-  getColor = (color) => {
+  getNoteColor = (color) => {
     console.log(color)
+  }
+
+  componentDidMount() {
+    console.log("%cNoteFilter has been mounted.", "color:#58B957;")
+  }
+
+  componentWillUnmount() {
+    console.log("%cNoteFilter has been unmounted.", "color:#DB524B;")
   }
 
   render() {
@@ -16,7 +24,7 @@ export default class NoteFilter extends Component {
       <Panel bsStyle={ 'info' } style={{ color:'#2E7090', backgroundColor: '#D8EDF8' }}>
         <div>
           <strong>Color</strong>
-          <NoteColorPicker getColor={ this.getColor }/>
+          <NoteColorPicker getNoteColor={ this.getNoteColor }/>
         </div>
         <br/>
         <div>

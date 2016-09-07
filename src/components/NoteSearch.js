@@ -13,6 +13,14 @@ class NoteSearch extends React.Component {
     sharingFilters: []
   }
 
+  componentDidMount() {
+    console.log("%cNoteSearch has been mounted.", "color:#58B957;")
+  }
+
+  componentWillUnmount() {
+    console.log("%cNoteSearch has been unmounted.", "color:#DB524B;")
+  }
+
   render() {
     return (
       <form action="#" className={ 'form-inline' }

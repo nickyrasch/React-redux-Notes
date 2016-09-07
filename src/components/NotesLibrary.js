@@ -2,20 +2,20 @@
 
 // React Stuff
 import React, { Component } from 'react'
-import { refetch } from '../utils/api-connector'
 
 // Custom Components
 import NoteList from './NoteList'
 import NoteIcon from './NoteIcon'
+import NoteFilter from './NoteFilter'
 
 // This is the main React component that will hold all state and methods for react-note
-class NotesLibrary extends Component {
+export default class NotesLibrary extends Component {
   constructor(props) {
     super(props)
     this.state = {
       showModal      : true,
       showEditor     : false,
-      showFilters    : true,
+      showFilters    : false,
       caseComponents : []
     }
   }
@@ -29,32 +29,46 @@ class NotesLibrary extends Component {
     notes          : []
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({ caseComponents: nextProps.caseComponents.value }, () => this.updateNotesArray())
+  componentDidMount() {
+    console.log("%cNotes Library has been mounted.", "color:#58B957;")
+    this.getCaseComponents()
   }
 
-  onToggleShowModal = () => this.setState({showModal: !this.state.showModal}) // Super slick one-liner
-  onToggleShowEditor = () => this.setState({ showEditor: !this.state.showEditor }) // So slick
-  onToggleShowFilters = () => this.setState({ showFilters: !this.state.showFilters }) // Oh yeah
+  componentWillUnmount() {
+    console.log("%cNotes Library has been unmounted.", "color:#DB524B;")
+  }
 
-  onAddNote = () => {
-    this.setState({
-      note               : null,
-      caseComponentClass : this.state.caseComponent.entityName,
-      caseComponentId    : this.state.caseComponent.id,
-      showNoteEditor     : true
+  onToggleShowModal   = () => this.setState({ showModal: !this.state.showModal }) // Super slick one-liner
+  onToggleShowEditor  = () => this.setState({ showEditor: !this.state.showEditor }) // So slick
+  onToggleShowFilters = () => this.setState({ showFilters: !this.state.showFilters }) // Awwww yeah
+
+  getCaseComponents = () => {
+    let url = `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/case.id/${ this.props.caseId }?depth=1&includeClobs=true`
+    fetch(url, {
+      method : "GET",
+      headers: { "Authorization": `Basic ${btoa('admin:@pass$')}` },
     })
+      .then((res) => res.json())
+      .then((caseComponentData) => {
+        this.updateCaseComponentArray(caseComponentData, (caseComponentData) => {
+          this.setState({ caseComponents: caseComponentData })
+        })
+      })
   }
 
-  updateNotesArray = () => {
-    let notes = []
-    this.state.caseComponents.forEach((component) => {
-      notes.push(component.content)
-      // Set state once the notes array contains content from all case components
-      if (notes.length === this.state.caseComponents.length) {
-        this.setState({ notes: notes, loaded: true })
+  updateCaseComponentArray = (array, callback) => {
+    array.forEach((item, i) => {
+      item.showEditor = false
+      if (i === array.length - 1) {
+        callback(array)
       }
     })
+  }
+
+  renderNoteFilter = () => {
+    return (
+      <NoteFilter />
+    )
   }
 
   renderNoteList = () => {
@@ -66,26 +80,17 @@ class NotesLibrary extends Component {
       onToggleShowEditor  : this.onToggleShowEditor,
       onToggleShowFilters : this.onToggleShowFilters,
       caseComponents      : this.state.caseComponents,
-      notes               : this.state.notes
+      renderNoteFilter    : this.renderNoteFilter
     }
-
-    return (
-      <NoteList { ...noteListProps } />
-    )
+    return <NoteList { ...noteListProps } />
   }
 
   render() {
     return(
       <div>
         <NoteIcon onClick={ this.onToggleShowModal } />
-        { this.state.loaded ? this.renderNoteList() : false }
+        { this.state.showModal ? this.renderNoteList() : null }
       </div>
     )
   }
 }
-
-export default refetch(props => ({
-  caseComponents: {
-    url: `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/case.id/${ props.caseId }?depth=1&includeClobs=true`
-  }
-}))(NotesLibrary)
