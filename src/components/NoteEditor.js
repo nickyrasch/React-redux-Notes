@@ -27,21 +27,24 @@ class NoteEditor extends React.Component {
   componentDidMount() {
     let container
     tinymce.init({
+      selector: 'textarea.tinymce',
       setup: (editor) => {
         editor.on('init', function() {
-          container = editor.getContainer()
+          let doc = this.getDoc().body
+          doc.style.fontSize = '14px'
+          doc.style.fontFamily = 'Helvetica Neue, Helvetica'
+          container = this.getContainer()
           container.style.borderWidth = '0px'
           container.style.marginBottom = '3px'
-          container.childNodes[0].childNodes[0].style.borderRadius = '4px'
-          container.childNodes[0].style.height = '128px' // TODO: Add resize event to handle height when window is small
-          container.childNodes[0].childNodes[0].style.paddingTop = '0px'
+          // container.childNodes[0].childNodes[0].style.borderRadius = '4px'
+          // container.childNodes[0].style.height = '128px' // TODO: Add resize event to handle height when window is small
+          // container.childNodes[0].childNodes[0].style.paddingTop = '0px'
           console.log(container)
         })
         editor.on('change', (event) => {
           this.props.onChange(event)
         })
       },
-      selector: 'textarea.tinymce',
       plugins: 'code textcolor link fullscreen table',
       toolbar: 'bold italic underline strikethrough | forecolor backcolor | bullist numlist blockquote | link table code | fullscreen',
       statusbar: false,
@@ -57,7 +60,7 @@ class NoteEditor extends React.Component {
   render() {
     return (
       <Panel bsStyle={ this.props.panelColor.style } header={ this.props.header }>
-        <input fill type="text" defaultValue={ this.props.titleValue } style={{ width: '100%', height: '32px' }}/>
+        <input fill type="text" defaultValue={ this.props.titleValue } style={{ width: '100%', height: '32px' }} onChange={ this.props.onChangeNoteTitle }/>
         <textarea fill ref={ 'tinymce' } className={ 'tinymce' } defaultValue={ this.props.defaultValue }/>
         <NoteColorPicker getNoteColor={ this.props.getNoteColor }/>
         <Button bsStyle={ 'danger' } className={ 'pull-right' } onClick={ this.props.onToggleShowEditor }>Delete</Button>

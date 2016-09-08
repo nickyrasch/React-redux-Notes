@@ -11,13 +11,16 @@ class Note extends React.Component {
     this.state = {
       showEditor        : false,
       content           : this.props.caseComponent.content,
+      title             : this.props.caseComponent.title,
       initialPanelColor : this.getNoteColor(this.props.caseComponent.color.toUpperCase()),
-      panelColor        : null
+      panelColor        : this.props.caseComponent.color,
+      loading           : false
     }
   }
 
   static propTypes = {
-    caseComponent: React.PropTypes.object.isRequired
+    caseComponent     : React.PropTypes.object.isRequired,
+    getCaseComponents : React.PropTypes.func.isRequired
   }
 
   componentWillMount() {
@@ -33,23 +36,19 @@ class Note extends React.Component {
     console.log("%cNote has been unmounted.", "color:#DB524B;")
   }
 
-  onToggleShowEditor = () => {
-    this.setState({ showEditor: !this.state.showEditor })
-  }
+  toggleLoading = () => this.setState({ loading: !this.state.loading })
 
-  onChange = (event, content) => {
-    this.setState({ [content]: event.target.getContent() })
-    console.log("Active editor changed:", event.target.getContent())
-  }
+  onToggleShowEditor = () => this.setState({ showEditor: !this.state.showEditor })
+  onChangeNoteBody   = (event) => this.setState({ content: event.target.getContent() })
+  onChangeNoteTitle  = (event) => this.setState({ title: event.target.value })
 
   onCancel = () => {
     this.onToggleShowEditor()
     this.setState({ panelColor: this.state.initialPanelColor })
-    console.log("caseComponent color:", this.props.caseComponent.color)
-    console.log("State Color", this.state.panelColor)
   }
 
   onSaveNote = () => {
+    this.toggleLoading()
     this.onToggleShowEditor()
     let url = `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/entities/CaseNote/${this.props.caseComponent.id}`
     fetch(url, {
@@ -59,14 +58,15 @@ class Note extends React.Component {
         "Content-Type"  : "application/json"
       },
       body: JSON.stringify({
-        content: this.state.content,
-        color: this.state.panelColor.code
+        content : this.state.content,
+        color   : this.state.panelColor.code,
+        title   : this.state.title
       })
     })
       .then((res) => res.json()) // Convert response data to  json
-      .then((data) => {
-        console.log("Data:", data)
-      });
+      .then(() => {
+        this.props.getCaseComponents(this.props.caseComponent.id, this.props.index, this.toggleLoading)
+      })
   }
 
   editorGetNoteColor = (color) => this.getNoteColor(color, 'editor')
@@ -92,11 +92,21 @@ class Note extends React.Component {
     return panelColor
   }
 
+  renderActivityIndicator = () => {
+    return (
+      <span style={{ fontSize: '14px' }}>
+        <span>{ this.state.title }</span>
+        <span className={ 'pull-right' }>Loading...</span>
+      </span>
+    )
+  }
+
   renderEditor = () => {
     let noteEditorProps = {
       onToggleShowEditor : this.onToggleShowEditor,
       defaultValue       : this.props.caseComponent.content,
-      onChange           : (event) => this.onChange(event, 'wubbalubbadubdub'),
+      onChange           : this.onChangeNoteBody,
+      onChangeNoteTitle  : this.onChangeNoteTitle,
       onCancel           : this.onCancel,
       onSave             : this.onSaveNote,
       getNoteColor       : this.editorGetNoteColor,
@@ -121,7 +131,8 @@ class Note extends React.Component {
   renderNote = () => {
     console.log("State panelColor:", this.state.panelColor)
     return(
-      <Panel bsStyle={ this.state.panelColor.style } header={ this.props.caseComponent.title }>
+      <Panel bsStyle={ this.state.panelColor.style } header={ this.state.loading ? this.renderActivityIndicator() : this.state.title }>
+
         <Grid fluid>
           <Row style={{ height: '34px' }}>
             <Col sm={ 9 } xs={ 7 }>
@@ -137,7 +148,6 @@ class Note extends React.Component {
   }
 
   render() {
-    console.log("THIS DOT STATE:", this.state)
     return (
       <div>
         { this.state.showEditor ? this.renderEditor() : null }

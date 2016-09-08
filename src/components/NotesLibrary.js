@@ -42,22 +42,41 @@ export default class NotesLibrary extends Component {
   onToggleShowEditor  = () => this.setState({ showEditor: !this.state.showEditor }) // So slick
   onToggleShowFilters = () => this.setState({ showFilters: !this.state.showFilters }) // Awwww yeah
 
-  getCaseComponents = () => {
-    let url = `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/case.id/${ this.props.caseId }?depth=1&includeClobs=true`
-    fetch(url, {
-      method : "GET",
-      headers: { "Authorization": `Basic ${btoa('admin:@pass$')}` },
-    })
-      .then((res) => res.json())
-      .then((caseComponentData) => {
-        this.updateCaseComponentArray(caseComponentData, (caseComponentData) => {
-          this.setState({ caseComponents: caseComponentData })
-        })
+  getCaseComponents = (id, index, callback) => {
+    let headers = {'Authorization': `Basic ${btoa('admin:@pass$')}`}
+    if (id) {
+      let url = `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/id/${ id }?depth=1&includeClobs=true`
+      fetch(url, {
+        method: 'GET',
+        headers : headers
       })
+        .then((res) => res.json())
+        .then((caseComponentData) => {
+          let caseComponent = caseComponentData[0]
+          let updatedCaseComponents = [...this.state.caseComponents]
+          updatedCaseComponents.splice(index, 1, caseComponent)
+          this.setState({caseComponents: updatedCaseComponents}, () => callback()) // callback sets note's loading state
+        })
+    }
+    else {
+      let url = `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/case.id/${ this.props.caseId }?depth=1&includeClobs=true`
+      fetch(url, {
+        method : 'GET',
+        headers: headers
+      })
+        .then((res) => res.json())
+        .then((caseComponentData) => {
+          this.updateCaseComponentArray(caseComponentData, (caseComponentData) => {
+            this.setState({caseComponents: caseComponentData})
+          })
+        })
+    }
   }
 
   updateCaseComponentArray = (array, callback) => {
     array.forEach((item, i) => {
+      console.log('Component', item)
+      // Setting showEditor in the caseComponent object makes showing the editor for each note easy
       item.showEditor = false
       if (i === array.length - 1) {
         callback(array)
@@ -80,12 +99,14 @@ export default class NotesLibrary extends Component {
       onToggleShowEditor  : this.onToggleShowEditor,
       onToggleShowFilters : this.onToggleShowFilters,
       caseComponents      : this.state.caseComponents,
+      getCaseComponents   : this.getCaseComponents,
       renderNoteFilter    : this.renderNoteFilter
     }
     return <NoteList { ...noteListProps } />
   }
 
   render() {
+    console.log('State components in render:', this.state.caseComponents)
     return(
       <div>
         <NoteIcon onClick={ this.onToggleShowModal } />

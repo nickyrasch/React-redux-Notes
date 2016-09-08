@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap'
 
 export const NoteColorPicker = (props) => {
   return(
-    <div style={{ marginTop: '5px' }}>
+    <div style={{ marginTop: '5px', display: 'inline'}}>
       <Button onClick={ () => props.getNoteColor('#E7E7E7') }
               style={{ backgroundColor: '#E7E7E7', width: '28px', height: '28px' }}
       />
