@@ -25,10 +25,11 @@ class NoteEditor extends React.Component {
   }
 
   componentDidMount() {
+    let container
     tinymce.init({
       setup: (editor) => {
         editor.on('init', function() {
-          let container = editor.getContainer()
+          container = editor.getContainer()
           container.style.borderWidth = '0px'
           container.style.marginBottom = '3px'
           container.childNodes[0].childNodes[0].style.borderRadius = '4px'
@@ -56,7 +57,7 @@ class NoteEditor extends React.Component {
   render() {
     return (
       <Panel bsStyle={ this.props.panelColor.style } header={ this.props.header }>
-        <input fill type="text" defaultValue={ this.props.titleValue } style={{ width: '100%' }}/>
+        <input fill type="text" defaultValue={ this.props.titleValue } style={{ width: '100%', height: '32px' }}/>
         <textarea fill ref={ 'tinymce' } className={ 'tinymce' } defaultValue={ this.props.defaultValue }/>
         <NoteColorPicker getNoteColor={ this.props.getNoteColor }/>
         <Button bsStyle={ 'danger' } className={ 'pull-right' } onClick={ this.props.onToggleShowEditor }>Delete</Button>
