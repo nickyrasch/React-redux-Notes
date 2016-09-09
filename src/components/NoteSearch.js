@@ -4,7 +4,14 @@
 import React from 'react'
 import { Button, Grid, Row, Col, InputGroup, FormControl } from 'react-bootstrap'
 
+// Custom Components
+import NoteFilter from './NoteFilter'
+
 class NoteSearch extends React.Component {
+  static propTypes = {
+    showFilter: React.PropTypes.bool.isRequired
+  }
+
   static defaultProps = {
     newNoteOnOpen : false,
     editNoteOnOpen: false,
@@ -19,6 +26,16 @@ class NoteSearch extends React.Component {
 
   componentWillUnmount() {
     console.log("%cNoteSearch has been unmounted.", "color:#DB524B;")
+  }
+
+  onSearch = () => {
+    let url = `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/case.id/${ this.props.caseId }?depth=1&includeClobs=true`
+  }
+
+  renderNoteFilter = () => {
+    return (
+      <NoteFilter />
+    )
   }
 
   render() {
@@ -38,7 +55,7 @@ class NoteSearch extends React.Component {
                 />
 
                 <InputGroup.Button style={{ width: '32px' }}>
-                  <Button style={{ marginBottom: '16px', width: '100%' }} onClick={ this.props.onToggleShowFilters }>
+                  <Button style={{ marginBottom: '16px', width: '100%' }} onClick={ this.props.onToggleShowFilter }>
                     Filters
                   </Button>
                 </InputGroup.Button>
@@ -56,6 +73,7 @@ class NoteSearch extends React.Component {
             </Col>
           </Row>
         </Grid>
+        { this.props.showFilter ? this.renderNoteFilter() : null }
       </form>
     )
   }

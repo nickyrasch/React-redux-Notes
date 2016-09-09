@@ -15,7 +15,7 @@ export default class NotesLibrary extends Component {
     this.state = {
       showModal      : true,
       showEditor     : false,
-      showFilters    : false,
+      showFilter     : false,
       caseComponents : []
     }
   }
@@ -38,9 +38,13 @@ export default class NotesLibrary extends Component {
     console.log("%cNotes Library has been unmounted.", "color:#DB524B;")
   }
 
-  onToggleShowModal   = () => this.setState({ showModal: !this.state.showModal }) // Super slick one-liner
-  onToggleShowEditor  = () => this.setState({ showEditor: !this.state.showEditor }) // So slick
-  onToggleShowFilters = () => this.setState({ showFilters: !this.state.showFilters }) // Awwww yeah
+  onToggleShowModal  = () => this.setState({ showModal: !this.state.showModal }) // Super slick one-liner
+  onToggleShowEditor = () => this.setState({ showEditor: !this.state.showEditor }) // So slick
+  onToggleShowFilter = () => this.setState({ showFilter: !this.state.showFilter }) // Awwww yeah
+
+  onChangeSearchTerm = (event) => {
+    console.log(event.target.value)
+  }
 
   getCaseComponents = (id, index, callback) => {
     let headers = {'Authorization': `Basic ${btoa('admin:@pass$')}`}
@@ -84,20 +88,15 @@ export default class NotesLibrary extends Component {
     })
   }
 
-  renderNoteFilter = () => {
-    return (
-      <NoteFilter />
-    )
-  }
-
   renderNoteList = () => {
     let noteListProps = {
       showModal           : this.state.showModal,
       showEditor          : this.state.showEditor,
-      showFilters         : this.state.showFilters,
+      showFilter          : this.state.showFilter,
       onToggleShowModal   : this.onToggleShowModal,
       onToggleShowEditor  : this.onToggleShowEditor,
-      onToggleShowFilters : this.onToggleShowFilters,
+      onToggleShowFilter  : this.onToggleShowFilter,
+      onChangeSearchTerm  : this.onChangeSearchTerm,
       caseComponents      : this.state.caseComponents,
       getCaseComponents   : this.getCaseComponents,
       renderNoteFilter    : this.renderNoteFilter

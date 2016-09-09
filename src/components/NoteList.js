@@ -11,15 +11,15 @@ import NoteEditor from './NoteEditor'
 
 export default class NoteList extends React.Component {
   static propTypes = {
-    showModal           : React.PropTypes.bool.isRequired,
-    showEditor          : React.PropTypes.bool.isRequired,
-    showFilters         : React.PropTypes.bool.isRequired,
-    onToggleShowModal   : React.PropTypes.func.isRequired,
-    onToggleShowEditor  : React.PropTypes.func.isRequired,
-    onToggleShowFilters : React.PropTypes.func.isRequired,
-    renderNoteFilter    : React.PropTypes.func.isRequired,
-    caseComponents      : React.PropTypes.array.isRequired,
-    getCaseComponents   : React.PropTypes.func.isRequired
+    showModal          : React.PropTypes.bool.isRequired,
+    showEditor         : React.PropTypes.bool.isRequired,
+    showFilter         : React.PropTypes.bool.isRequired,
+    onToggleShowModal  : React.PropTypes.func.isRequired,
+    onToggleShowEditor : React.PropTypes.func.isRequired,
+    onToggleShowFilter : React.PropTypes.func.isRequired,
+    onChangeSearchTerm : React.PropTypes.func.isRequired,
+    getCaseComponents  : React.PropTypes.func.isRequired,
+    caseComponents     : React.PropTypes.array.isRequired
   }
 
   static defaultProps = {
@@ -38,7 +38,11 @@ export default class NoteList extends React.Component {
     console.log("%cNote List has been unmounted.", "color:#DB524B;")
   }
 
-  createNotes = () => {
+  onChange = (event) => {
+    console.log(event.target.getContent())
+  }
+
+  renderNotes = () => {
     return this.props.caseComponents.map((component, i) => {
       let noteProps = {
         key               : i,
@@ -48,10 +52,6 @@ export default class NoteList extends React.Component {
       }
       return <Note { ...noteProps }/>
     })
-  }
-
-  onChange = (event) => {
-    console.log(event.target.getContent())
   }
 
   renderNoteEditor = () => {
@@ -64,9 +64,19 @@ export default class NoteList extends React.Component {
     return <NoteEditor {...noteEditorProps}/>
   }
 
+  renderNoteSearch = () => {
+    let noteSearchProps = {
+      showFilter         : this.props.showFilter,
+      onToggleShowEditor : this.props.onToggleShowEditor,
+      onToggleShowFilter : this.props.onToggleShowFilter,
+      onChangeSearchTerm : this.props.onChangeSearchTerm
+    }
+    return(
+      <NoteSearch { ...noteSearchProps }/>
+    )
+  }
+
   render() {
-
-
     if (this.props.caseComponents.length > 0) {
       let caseName = this.props.caseComponents[0].case.caseName
       let modalProps = {
@@ -82,13 +92,9 @@ export default class NoteList extends React.Component {
           </Modal.Header>
 
           <Modal.Body>
-            <NoteSearch
-              onToggleShowEditor={ this.props.onToggleShowEditor }
-              onToggleShowFilters={ this.props.onToggleShowFilters }
-            />
-            { this.props.showFilters ? this.props.renderNoteFilter() : null }
+            { this.renderNoteSearch() }
             { this.props.showEditor ? this.renderNoteEditor() : null }
-            { this.createNotes() }
+            { this.renderNotes() }
           </Modal.Body>
 
           <Modal.Footer>
