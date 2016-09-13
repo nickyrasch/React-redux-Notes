@@ -19,7 +19,6 @@ export default class NotesLibrary extends Component {
       headers        : {'Content-Type': 'application/json', 'Authorization': `Basic ${btoa('admin:@pass$')}`},
       caseComponents : []
     }
-
   }
 
   static propTypes = {
@@ -135,19 +134,7 @@ export default class NotesLibrary extends Component {
     }
   }
 
-  updateCaseComponentArray = (array, callback) => {
-
-    // this.state = {
-    //   showEditor        : false,
-    //   caseComponent     : this.props.caseComponent,
-    //   content           : this.props.caseComponent.content,
-    //   title             : this.props.caseComponent.title,
-    //   initialPanelColor : this.getNoteColor(this.props.caseComponent.color.toUpperCase()),
-    //   panelColor        : this.props.caseComponent.color,
-    //   loading           : false
-    // }
-
-    array.forEach((item, i) => {
+  updateCaseComponentArray = (array, callback) => {array.forEach((item, i) => {
       console.log('Component', item)
       // Setting showEditor in the caseComponent object makes showing the editor for each note easy
       item.showEditor = false
