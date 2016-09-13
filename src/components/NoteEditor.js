@@ -10,13 +10,11 @@ import { NoteColorPicker } from './NoteColorPicker'
 class NoteEditor extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      panelStyle: 'primary'
-    }
   }
   static propTypes = {
-    onToggleShowEditor : React.PropTypes.func.isRequired,
-    onChange           : React.PropTypes.func.isRequired
+    onToggleShowEditor  : React.PropTypes.func.isRequired,
+    onChangeNoteContent : React.PropTypes.func.isRequired,
+    caseComponent       : React.PropTypes.object
   }
 
   static defaultProps = {
@@ -36,13 +34,10 @@ class NoteEditor extends React.Component {
           container = this.getContainer()
           container.style.borderWidth = '0px'
           container.style.marginBottom = '3px'
-          // container.childNodes[0].childNodes[0].style.borderRadius = '4px'
-          // container.childNodes[0].style.height = '128px' // TODO: Add resize event to handle height when window is small
-          // container.childNodes[0].childNodes[0].style.paddingTop = '0px'
           console.log(container)
         })
         editor.on('change', (event) => {
-          this.props.onChange(event)
+          this.props.onChangeNoteContent(event.target.getContent(), this.props.caseComponent.id)
         })
       },
       plugins: 'code textcolor link fullscreen table',
@@ -57,15 +52,27 @@ class NoteEditor extends React.Component {
     console.log("%cNoteEditor has been unmounted.", "color:#DB524B;")
   }
 
+  getPanelColor = (color) => {
+    this.props.onChangeNoteColor(color, this.props.caseComponent.id)
+  }
+
   render() {
     return (
-      <Panel bsStyle={ this.props.panelColor.style } header={ this.props.header }>
-        <input fill type="text" defaultValue={ this.props.titleValue } style={{ width: '100%', height: '32px' }} onChange={ this.props.onChangeNoteTitle }/>
-        <textarea fill ref={ 'tinymce' } className={ 'tinymce' } defaultValue={ this.props.defaultValue }/>
-        <NoteColorPicker getNoteColor={ this.props.getNoteColor }/>
+      <Panel bsStyle={ this.props.getNoteColor(this.props.caseComponent.color) } header={ this.props.header }>
+        <input
+          fill
+          type="text"
+          defaultValue={ this.props.caseComponent.title }
+          style={{ width: '100%', height: '32px' }}
+          onChange={ (event) => this.props.onChangeNoteTitle(event.target.value, this.props.caseComponent.id) }
+        />
+        <textarea fill ref={ 'tinymce' } className={ 'tinymce' } defaultValue={ this.props.caseComponent.content }/>
+
+        <NoteColorPicker getNoteColor={ this.getPanelColor }/>
+
         <Button bsStyle={ 'danger' } className={ 'pull-right' } onClick={ this.props.onToggleShowEditor }>Delete</Button>
         <Button bsStyle={ 'success' } className={ 'pull-right' } style={{ marginRight: '15px' }} onClick={ this.props.onSave }>Save</Button>
-        <Button className={ 'pull-right' } style={{ marginRight: '15px' }} onClick={ this.props.onCancel }>Cancel</Button>
+        <Button className={ 'pull-right' } style={{ marginRight: '15px' }} onClick={ this.props.onToggleShowEditor }>Cancel</Button>
       </Panel>
     )
   }

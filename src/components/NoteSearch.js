@@ -28,10 +28,6 @@ class NoteSearch extends React.Component {
     console.log("%cNoteSearch has been unmounted.", "color:#DB524B;")
   }
 
-  onSearch = () => {
-    let url = `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/case.id/${ this.props.caseId }?depth=1&includeClobs=true`
-  }
-
   renderNoteFilter = () => {
     return (
       <NoteFilter />
@@ -50,7 +46,7 @@ class NoteSearch extends React.Component {
                 <FormControl
                   type={ 'text' }
                   placeholder={ 'Search...' }
-                  onChange={ this.onChangeSearchTerm }
+                  onChange={ this.props.onChangeSearchTerm }
                   style={{ marginBottom: '16px' }}
                 />
 
@@ -62,7 +58,7 @@ class NoteSearch extends React.Component {
               </InputGroup>
             </Col>
             <Col sm={ 2 }>
-              <Button onClick={ this.onSearch } bsStyle={ 'primary' } style={{ marginBottom: '16px', width: '100%' }}>
+              <Button onClick={ this.props.onSearch } bsStyle={ 'primary' } style={{ marginBottom: '16px', width: '100%' }}>
                 Search
               </Button>
             </Col>

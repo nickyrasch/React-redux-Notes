@@ -45,10 +45,14 @@ export default class NoteList extends React.Component {
   renderNotes = () => {
     return this.props.caseComponents.map((component, i) => {
       let noteProps = {
-        key               : i,
-        index             : i,
-        caseComponent     : component,
-        getCaseComponents : this.props.getCaseComponents
+        key                 : i,
+        index               : i,
+        caseComponent       : component,
+        getCaseComponents   : this.props.getCaseComponents,
+        onChangeNoteColor   : this.props.onChangeNoteColor,
+        onChangeNoteTitle   : this.props.onChangeNoteTitle,
+        onChangeNoteContent : this.props.onChangeNoteContent,
+        onSaveNote          : this.props.onSaveNote,
       }
       return <Note { ...noteProps }/>
     })
@@ -67,6 +71,7 @@ export default class NoteList extends React.Component {
   renderNoteSearch = () => {
     let noteSearchProps = {
       showFilter         : this.props.showFilter,
+      onSearch           : this.props.onSearch,
       onToggleShowEditor : this.props.onToggleShowEditor,
       onToggleShowFilter : this.props.onToggleShowFilter,
       onChangeSearchTerm : this.props.onChangeSearchTerm
