@@ -1,9 +1,5 @@
-/* Created by alexdemars94 on 8/29/16. */
-
-// React Stuff
 import React from 'react'
 import { Button, Grid, Row, Col, InputGroup, FormControl } from 'react-bootstrap'
-
 // Custom Components
 import NoteFilter from './NoteFilter'
 
@@ -46,6 +42,7 @@ class NoteSearch extends React.Component {
                 <FormControl
                   type={ 'text' }
                   placeholder={ 'Search...' }
+                  value={ this.props.searchTerm }
                   onChange={ this.props.onChangeSearchTerm }
                   style={{ marginBottom: '16px' }}
                 />

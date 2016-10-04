@@ -1,9 +1,5 @@
-/* Created by alexdemars94 on 8/29/16. */
-
-// React Stuff
 import React from 'react'
 import { Panel, Button, FormControl } from 'react-bootstrap'
-
 // Custom Components
 import { NoteColorPicker } from './NoteColorPicker'
 
@@ -11,11 +7,11 @@ class NoteEditor extends React.Component {
   constructor(props) {
     super(props)
   }
-  static propTypes = {
-    onToggleShowEditor  : React.PropTypes.func.isRequired,
-    onChangeNoteContent : React.PropTypes.func.isRequired,
-    caseComponent       : React.PropTypes.object
-  }
+  // static propTypes = {
+  //   onToggleShowEditor  : React.PropTypes.func.isRequired,
+  //   onChangeNoteContent : React.PropTypes.func.isRequired,
+  //   caseComponent       : React.PropTypes.object
+  // }
 
   static defaultProps = {
     header: 'Editor',
@@ -34,7 +30,6 @@ class NoteEditor extends React.Component {
           container = this.getContainer()
           container.style.borderWidth = '0px'
           container.style.marginBottom = '3px'
-          console.log(container)
         })
         editor.on('change', (event) => {
           this.props.onChangeNoteContent(event.target.getContent(), this.props.caseComponent.id)
@@ -57,6 +52,7 @@ class NoteEditor extends React.Component {
   }
 
   render() {
+    console.log('noteEditorProps', this.props.caseComponent)
     return (
       <Panel bsStyle={ this.props.getNoteColor(this.props.caseComponent.color) } header={ this.props.header }>
         <input

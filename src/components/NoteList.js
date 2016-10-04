@@ -1,9 +1,5 @@
-/* Created by alexdemars94 on 8/25/16. */
-
-// React Stuff
 import React from 'react'
-import { Modal } from 'react-bootstrap'
-
+import { Modal, ListGroup, ListGroupItem } from 'react-bootstrap'
 // Custom Components
 import NoteSearch from './NoteSearch'
 import Note from './Note'
@@ -36,14 +32,31 @@ export default class NoteList extends React.Component {
 
   componentWillUnmount() {
     console.log("%cNote List has been unmounted.", "color:#DB524B;")
+    {this.props.showFilter ? this.props.onToggleShowFilter() : null}
   }
 
-  onChange = (event) => {
-    console.log(event.target.getContent())
+  renderNoteSearch = () => {
+    let noteSearchProps = {
+      showFilter         : this.props.showFilter,
+      onSearch           : this.props.onSearch,
+      searchTerm         : this.props.searchTerm,
+      onToggleShowEditor : this.props.onToggleShowEditor,
+      onToggleShowFilter : this.props.onToggleShowFilter,
+      onChangeSearchTerm : this.props.onChangeSearchTerm
+    }
+    return(
+      <NoteSearch { ...noteSearchProps }/>
+    )
   }
 
   renderNotes = () => {
-    return this.props.caseComponents.map((component, i) => {
+    let components = this.props.caseComponents
+    let filteredNotes = components.filter(
+        (component) => {
+          return component.content.indexOf(this.props.searchTerm) !== -1;
+        }
+    )
+    return filteredNotes.map((component, i) => {
       let noteProps = {
         key                 : i,
         index               : i,
@@ -52,33 +65,13 @@ export default class NoteList extends React.Component {
         onChangeNoteColor   : this.props.onChangeNoteColor,
         onChangeNoteTitle   : this.props.onChangeNoteTitle,
         onChangeNoteContent : this.props.onChangeNoteContent,
+        onToggleShowEditor  : this.props.onToggleShowEditor,
         onSaveNote          : this.props.onSaveNote,
+        showEditor         : this.props.showEditor,
+        onToggleShowEditor : this.props.onToggleShowEditor,
       }
       return <Note { ...noteProps }/>
     })
-  }
-
-  renderNoteEditor = () => {
-    let noteEditorProps = {
-      panelColor         : { style: 'default' },
-      showEditor         : this.props.showEditor,
-      onToggleShowEditor : this.props.onToggleShowEditor,
-      onChange           : this.onChange
-    }
-    return <NoteEditor {...noteEditorProps}/>
-  }
-
-  renderNoteSearch = () => {
-    let noteSearchProps = {
-      showFilter         : this.props.showFilter,
-      onSearch           : this.props.onSearch,
-      onToggleShowEditor : this.props.onToggleShowEditor,
-      onToggleShowFilter : this.props.onToggleShowFilter,
-      onChangeSearchTerm : this.props.onChangeSearchTerm
-    }
-    return(
-      <NoteSearch { ...noteSearchProps }/>
-    )
   }
 
   render() {
@@ -91,19 +84,17 @@ export default class NoteList extends React.Component {
       }
       return (
         <Modal show={ this.props.showModal } { ...modalProps }>
+
           <Modal.Header closeButton>
             <span style={{ fontSize: "18px", fontWeight: "bold" }}>Notes for: </span>
             <span style={{ fontSize: "18px" }}>{ caseName }</span>
           </Modal.Header>
 
           <Modal.Body>
-            { this.renderNoteSearch() }
-            { this.props.showEditor ? this.renderNoteEditor() : null }
-            { this.renderNotes() }
+              { this.renderNoteSearch() }
+              { this.renderNotes() }
           </Modal.Body>
 
-          <Modal.Footer>
-          </Modal.Footer>
         </Modal>
       )
     } else {

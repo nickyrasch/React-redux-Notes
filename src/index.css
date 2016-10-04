@@ -4,5 +4,25 @@ body {
   font-family: sans-serif;
 }
 
+.notePanel .panel-default {
+  border-left: 4px solid #ddd;
+}
+
+.notePanel .panel-primary {
+  border-left: 4px solid #337ab7;
+}
+
+.notePanel .panel-success {
+  border-left: 4px solid #d6e9c6;
+}
+
+.notePanel .panel-danger {
+  border-left: 4px solid #ebccd1;
+}
+
+.notePanel .panel-warning {
+  border-left: 4px solid #faebcc;
+}
+
 button:focus {outline: none !important;}
 input:focus {outline: none !important;}

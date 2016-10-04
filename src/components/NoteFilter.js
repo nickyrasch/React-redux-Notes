@@ -1,8 +1,5 @@
-/* Created by alexdemars94 on 9/6/16. */
-
 import React, { Component } from 'react'
 import { Panel, Checkbox, Grid, Row, Col } from 'react-bootstrap'
-
 import { NoteColorPicker } from './NoteColorPicker'
 
 export default class NoteFilter extends Component {

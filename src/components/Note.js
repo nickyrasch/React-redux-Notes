@@ -1,9 +1,5 @@
-/* Created by alexdemars94 on 8/25/16. */
-
-// React Stuff
 import React from 'react';
 import { Panel, Button, Grid, Row, Col, ButtonGroup } from 'react-bootstrap'
-
 // Custom Components
 import NoteEditor from './NoteEditor'
 
@@ -36,13 +32,13 @@ class Note extends React.Component {
 
   onToggleShowEditor = () => this.setState({ showEditor: !this.state.showEditor })
 
-  onCancel = () => {
-    this.onToggleShowEditor()
-  }
+  // onCancel = () => {
+  //   this.onToggleShowEditor()
+  // }
 
   onSave = () => {
     this.toggleLoading()
-    this.onToggleShowEditor()
+    this.props.onToggleShowEditor()
     this.props.onSaveNote(this.props.caseComponent.id, this.props.index, this.toggleLoading)
   }
 
@@ -55,11 +51,13 @@ class Note extends React.Component {
       { code: '#DB524B', style: 'danger' },
       { code: '#F2AE43', style: 'warning' },
       { code: '#58B957', style: 'success' },
-      { code: '#3E8ACC', style: 'primary' }
+      { code: '#5cb85c', style: 'success' },
+      { code: '#3E8ACC', style: 'primary' },
+      { code: '#428bca', style: 'primary' }
     ]
     let panelColor
     possibleStyles.forEach((color) => {
-      if (color.code === hexCode) {
+      if (color.code.toUpperCase() === hexCode.toUpperCase()) {
         panelColor = color
       }
     })
@@ -78,11 +76,11 @@ class Note extends React.Component {
   renderEditor = () => {
     let noteEditorProps = {
       caseComponent       : this.props.caseComponent,
-      onToggleShowEditor  : this.onToggleShowEditor,
+      onToggleShowEditor  : this.props.onToggleShowEditor,
       onChangeNoteColor   : this.props.onChangeNoteColor,
       onChangeNoteContent : this.props.onChangeNoteContent,
       onChangeNoteTitle   : this.props.onChangeNoteTitle,
-      onCancel            : this.onCancel,
+      // onCancel            : this.onCancel,
       onSave              : this.onSave,
       getNoteColor        : this.editorGetNoteColor,
       header              : 'Edit Note'
@@ -103,7 +101,7 @@ class Note extends React.Component {
 
   renderNote = () => {
     return(
-      <Panel bsStyle={ this.getBootstrapStyle(this.props.caseComponent.color) } header={ this.state.loading ? this.renderActivityIndicator() : this.props.caseComponent.title }>
+      <Panel className="notePanel" bsStyle={ this.getBootstrapStyle(this.props.caseComponent.color) } header={ this.state.loading ? this.renderActivityIndicator() : this.props.caseComponent.title }>
 
         <Grid fluid>
           <Row style={{ height: '34px' }}>
@@ -120,6 +118,7 @@ class Note extends React.Component {
   }
 
   render() {
+
     return (
       <div>
         { this.state.showEditor ? this.renderEditor() : null }

@@ -1,8 +1,5 @@
-/* Created by alexdemars94 on 8/26/16. */
-
-// React Stuff
 import React, { Component } from 'react'
-
+import { createStore } from 'redux'
 // Custom Components
 import NoteList from './NoteList'
 import NoteIcon from './NoteIcon'
@@ -12,22 +9,17 @@ export default class NotesLibrary extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      showModal      : true,
+      showModal      : false,
       showEditor     : false,
       showFilter     : false,
       searchTerm     : '',
-      headers        : {'Content-Type': 'application/json', 'Authorization': `Basic ${btoa('admin:@pass$')}`},
+      headers        : {'Content-Type': 'application/json', 'Authorization': `Basic ${btoa('joe:pass')}`},
       caseComponents : []
     }
   }
 
   static propTypes = {
     caseId: React.PropTypes.number.isRequired
-  }
-
-  static defaultProps = {
-    caseComponents : [],
-    notes          : []
   }
 
   componentDidMount() {
@@ -37,11 +29,13 @@ export default class NotesLibrary extends Component {
 
   componentWillUnmount() {
     console.log("%cNotes Library has been unmounted.", "color:#DB524B;")
+    this.counter()
+
   }
 
-  onToggleShowModal  = () => this.setState({ showModal: !this.state.showModal }) // Super slick one-liner
-  onToggleShowEditor = () => this.setState({ showEditor: !this.state.showEditor }) // So slick
-  onToggleShowFilter = () => this.setState({ showFilter: !this.state.showFilter }) // Awwww yeah
+  onToggleShowModal  = () => this.setState({ showModal: !this.state.showModal })
+  onToggleShowEditor = () => this.setState({ showEditor: !this.state.showEditor })
+  onToggleShowFilter = () => this.setState({ showFilter: !this.state.showFilter })
 
   onChangeSearchTerm = (event) => {
     this.setState({ searchTerm: event.target.value })
@@ -89,8 +83,11 @@ export default class NotesLibrary extends Component {
 
   onSearch = () => {
     const url = this.state.searchTerm ?
-      `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/title/~%25${ this.state.searchTerm }%25?includeClobs=true&depth=1&maxResults=10`
-      : `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/?includeClobs=true&depth=1&maxResults=10`
+        `http://localhost:8080/sustain/ws/rest/ecourt/search/CaseNote/title/~%25${ this.state.searchTerm }%25?includeClobs=true&depth=1&maxResults=10`
+        : `http://localhost:8080/sustain/ws/rest/ecourt/search/CaseNote/?includeClobs=true&depth=1&maxResults=10`
+    // const url = this.state.searchTerm ?
+    //   `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/title/~%25${ this.state.searchTerm }%25?includeClobs=true&depth=1&maxResults=10`
+    //   : `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/?includeClobs=true&depth=1&maxResults=10`
     fetch(url, {
       method : 'GET',
       headers: this.state.headers
@@ -106,7 +103,7 @@ export default class NotesLibrary extends Component {
 
   getCaseComponents = (id, index, callback) => {
     if (id) {
-      let url = `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/id/${ id }?depth=1&includeClobs=true`
+      let url = `http://localhost:8080/sustain/ws/rest/ecourt/search/CaseNote/id/${ id }?depth=1&includeClobs=true`
       fetch(url, {
         method: 'GET',
         headers : this.state.headers
@@ -120,7 +117,7 @@ export default class NotesLibrary extends Component {
         })
     }
     else {
-      let url = `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/search/CaseNote/case.id/${ this.props.caseId }?depth=1&includeClobs=true`
+      let url = `http://localhost:8080/sustain/ws/rest/ecourt/search/CaseNote/case.id/${ this.props.caseId }?depth=1&includeClobs=true`
       fetch(url, {
         method : 'GET',
         headers: this.state.headers
@@ -135,7 +132,6 @@ export default class NotesLibrary extends Component {
   }
 
   updateCaseComponentArray = (array, callback) => {array.forEach((item, i) => {
-      console.log('Component', item)
       // Setting showEditor in the caseComponent object makes showing the editor for each note easy
       item.showEditor = false
       if (i === array.length - 1) {
@@ -151,7 +147,7 @@ export default class NotesLibrary extends Component {
         componentToSave = component
       }
     })
-    let url = `https://jtidev-config.ecourt.com/sustain/ws/rest/ecourt/entities/CaseNote/${ id }`
+    let url = `http://localhost:8080/sustain/ws/rest/ecourt/entities/CaseNote/${ id }`
     fetch(url, {
       method : "PUT",
       headers: this.state.headers,
