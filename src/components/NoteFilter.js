@@ -1,27 +1,14 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Panel, Checkbox, Grid, Row, Col } from 'react-bootstrap'
-import { NoteColorPicker } from './NoteColorPicker'
+import NoteColorPicker from './NoteColorPicker'
 
-export default class NoteFilter extends Component {
+const NoteFilter = () => {
 
-  getNoteColor = (color) => {
-    console.log(color)
-  }
-
-  componentDidMount() {
-    console.log("%cNoteFilter has been mounted.", "color:#58B957;")
-  }
-
-  componentWillUnmount() {
-    console.log("%cNoteFilter has been unmounted.", "color:#DB524B;")
-  }
-
-  render() {
     return (
       <Panel bsStyle={ 'info' } style={{ color:'#2E7090', backgroundColor: '#D8EDF8' }}>
         <div>
           <strong>Color</strong>
-          <NoteColorPicker getNoteColor={ this.getNoteColor }/>
+          <NoteColorPicker />
         </div>
         <br/>
         <div>
@@ -84,5 +71,6 @@ export default class NoteFilter extends Component {
         </div>
       </Panel>
     )
-  }
 }
+
+export default NoteFilter

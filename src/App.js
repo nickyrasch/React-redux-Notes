@@ -1,14 +1,10 @@
-import React, { Component } from 'react';
-import NotesLibrary from './components/NotesLibrary'
+import React from 'react';
+import NotesLibrary from './containers/NotesLibrary'
 
-class App extends Component {
-  render() {
-    return (
+const App = () => (
       <div>
-        <NotesLibrary caseId={ 744095 }/>
+        <NotesLibrary />
       </div>
-    );
-  }
-}
+)
 
 export default App;

@@ -18,6 +18,7 @@
     "react-loader": "^2.4.0",
     "react-redux": "^4.4.5",
     "react-refetch": "^1.0.0-beta.8",
+    "react-tinymce": "^0.5.1",
     "redux": "^3.6.0"
   },
   "scripts": {
