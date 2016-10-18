@@ -2,7 +2,7 @@ import React from 'react'
 import {  Button } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import  NoteColorPicker  from '../components/NoteColorPicker'
-import { toggleEditor, saveEdit, updateContent, updateTitle, deleteNote } from '../actions/actions'
+import { toggleEditor, saveEdit, updateContent, updateTitle, deleteNote, updateColor } from '../actions/actions'
 
 class NoteEditor extends React.Component {
 componentDidMount() {
@@ -67,7 +67,7 @@ render() {
                 <textarea ref={ 'tinymce' } className={ 'tinymce' } defaultValue={ currentContent } />
             </div>
             <div className={ 'panel-footer' } style={{height: '60px'}}>
-                <NoteColorPicker />
+                <NoteColorPicker updateColor={this.props.updateColor} />
                 <Button bsStyle={ 'danger' } className={ 'pull-right' } onClick={ () => this.props.deleteNote(this.props.note.id, this.props.arrayPosition) }>Delete</Button>
                 <Button bsStyle={ 'success' } className={ 'pull-right' } style={{marginRight: '15px'}} onClick={() => {this.props.saveEdit(id, currentContent, currentTitle, currentColor)}}>Save</Button>
                 <Button className={ 'pull-right' } style={{marginRight: '15px'}} onClick={() => {this.props.toggleEditor(this.props.note.id)
@@ -95,7 +95,9 @@ const mapDispatchToProps = (dispatch) => {
     updateTitle: (updatedTitle) => {
       dispatch(updateTitle(updatedTitle))},
     deleteNote: (id, arrayPosition) => {
-      dispatch(deleteNote(id, arrayPosition))}
+      dispatch(deleteNote(id, arrayPosition))},
+    updateColor: (updatedColor) => {
+          dispatch(updateColor(updatedColor))}
   }}
 
 export default connect(mapStateToProps,mapDispatchToProps)(NoteEditor)

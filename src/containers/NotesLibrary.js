@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import NotesModal from '../components/NotesModal'
 import NoteIcon from '../components/NoteIcon'
-import { getInitialColor, getCaseName } from '../actions/actions'
+import { getInitialColor, getCaseName, toggleModal } from '../actions/actions'
 
 class NotesLibrary extends Component {
 
@@ -21,7 +21,7 @@ class NotesLibrary extends Component {
   render() {
     return(
       <div>
-        <NoteIcon />
+        <NoteIcon toggleModal={this.props.toggleModal} />
         {this.props.state.showModal ? this.renderNotesModal() : null }
       </div>
     )
@@ -38,6 +38,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     getCaseName: () => {
       dispatch(getCaseName())
+    },
+    toggleModal: () => {
+      dispatch(toggleModal())
     }
   }
 }

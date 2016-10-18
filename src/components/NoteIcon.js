@@ -1,6 +1,4 @@
 import React from 'react'
-import {connect} from 'react-redux'
-import { toggleModal } from '../actions/actions'
 
 const NoteIcon = ({ toggleModal }) => {
     return (
@@ -12,16 +10,4 @@ const NoteIcon = ({ toggleModal }) => {
     )
 }
 
-const mapStateToProps = (state) => {
-    return {state}
-}
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        toggleModal: () => {
-            dispatch(toggleModal())
-        }
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(NoteIcon)
+export default NoteIcon

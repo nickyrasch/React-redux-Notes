@@ -1,7 +1,5 @@
 import React from 'react'
 import { Button } from 'react-bootstrap'
-import { connect } from 'react-redux'
-import { updateColor } from '../actions/actions'
 
 const NoteColorPicker = ({ updateColor }) => {
   return(
@@ -25,15 +23,4 @@ const NoteColorPicker = ({ updateColor }) => {
   )
 }
 
-const mapStateToProps = (state) => {
-    return state
-}
-const mapDispatchToProps = (dispatch) => {
-    return {
-        updateColor: (updatedColor) => {
-            dispatch(updateColor(updatedColor))
-        }
-    }
-}
-
-export default connect(mapStateToProps,mapDispatchToProps)(NoteColorPicker)
+export default NoteColorPicker

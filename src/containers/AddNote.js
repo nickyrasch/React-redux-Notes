@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import {  Button } from 'react-bootstrap'
-import { addNote, toggleAddNote, getInitialColor, updateContent, updateTitle } from '../actions/actions'
+import { addNote, toggleAddNote, getInitialColor, updateContent, updateTitle, updateColor } from '../actions/actions'
 import NoteColorPicker from '../components/NoteColorPicker'
 
 class AddNote extends React.Component {
@@ -59,7 +59,7 @@ render() {
                     <textarea ref={ 'tinymce' } className={ 'tinymce' } />
                 </div>
                 <div className={ 'panel-footer' } style={{height: '60px'}}>
-                    <NoteColorPicker />
+                    <NoteColorPicker updateColor={this.props.updateColor} />
                     <Button bsStyle={ 'success' } className={ 'pull-right' } style={{ marginRight: '15px' }} onClick={() => { if (this.props.updatedContent.length) this.props.addNote(this.props.updatedContent, newid, this.props.updatedTitle, currentColor); this.props.toggleAddNote() } }>Save</Button>
                     <Button className={ 'pull-right' } style={{ marginRight: '15px' }} onClick={() => this.props.toggleAddNote()}>Cancel</Button>
                 </div>
@@ -88,7 +88,9 @@ const mapDispatchToProps = (dispatch) => {
         updateContent: (updatedContent, currentContent) => {
             dispatch(updateContent(updatedContent, currentContent))},
         updateTitle: (updatedTitle) => {
-            dispatch(updateTitle(updatedTitle))}
+            dispatch(updateTitle(updatedTitle))},
+        updateColor: (updatedColor) => {
+            dispatch(updateColor(updatedColor))}
     }
 }
 
